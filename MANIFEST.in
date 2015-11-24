@@ -1,0 +1,9 @@
+#
+# Source Distribution Manifest
+#
+# More at https://docs.python.org/2/distutils/sourcedist.html
+
+include README.md LICENSE requirements.txt *-requirements.txt
+recursive-include project.d *.py *.md *.txt *.cfg
+#recursive-include debian changelog control compat copyright rules *.links *.postinst *.triggers
+#recursive-include debian/source format options

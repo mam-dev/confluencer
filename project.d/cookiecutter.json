@@ -1,0 +1,16 @@
+{
+    "email": "git@1and1.com",
+    "features": "travis flake8 cli",
+    "full_name": "1&1 Group",
+    "github_url": "https://github.com/1and1/confluencer",
+    "github_username": "1and1",
+    "keywords": "atlassian,confluence,wiki,cli,tool",
+    "license": "Apache 2.0",
+    "pkg_name": "confluencer",
+    "project_name": "Confluencer",
+    "repo_name": "confluencer",
+    "short_description": "A CLI tool to automate common Confluence maintenance tasks and content publishing",
+    "url": "https://github.com/1and1/confluencer",
+    "version": "0.1.0",
+    "year": "2015"
+}
