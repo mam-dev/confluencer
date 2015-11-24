@@ -6,9 +6,7 @@ A CLI tool to automate common Confluence maintenance tasks and content publishin
  [![Coveralls](https://img.shields.io/coveralls/1and1/confluencer.svg)](https://coveralls.io/r/1and1/confluencer)
  [![GitHub Issues](https://img.shields.io/github/issues/1and1/confluencer.svg)](https://github.com/1and1/confluencer/issues)
  [![License](https://img.shields.io/pypi/l/confluencer.svg)](https://github.com/1and1/confluencer/blob/master/LICENSE)
- [![Development Status](https://pypip.in/status/confluencer/badge.svg)](https://pypi.python.org/pypi/confluencer/)
  [![Latest Version](https://img.shields.io/pypi/v/confluencer.svg)](https://pypi.python.org/pypi/confluencer/)
- [![Download format](https://pypip.in/format/confluencer/badge.svg)](https://pypi.python.org/pypi/confluencer/)
  [![Downloads](https://img.shields.io/pypi/dw/confluencer.svg)](https://pypi.python.org/pypi/confluencer/)
 
 
