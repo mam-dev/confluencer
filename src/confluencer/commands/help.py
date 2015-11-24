@@ -19,6 +19,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import os
 import sys
+import itertools
 
 from rudiments.reamed import click
 
@@ -62,7 +63,7 @@ def help_command(ctx, config_dump=False):
         else:
             click.echo(u'{} spaces found.'.format(len(spaces)))
             click.echo(u'\nMost recently created:')
-            for space in list(sorted(spaces, key=lambda i: i.id, reverse=True))[:5]:
+            for space in itertools.islice(sorted(spaces, key=lambda i: i.id, reverse=True), 5):
                 click.echo(u'    {:10} {:>15} {}'.format(space.type, space.key, space.name))
 
     banner('More Help')
