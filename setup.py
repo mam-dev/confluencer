@@ -35,7 +35,9 @@
 # Project data (the rest is parsed from __init__.py and other project files)
 name = 'confluencer'
 package_name = 'confluencer'
-entry_points = {}
+entry_points = {
+    'console_scripts': ['cfr = confluencer.__main__:cli'],
+}
 
 
 # ~~~ BEGIN springerle/py-generic-project ~~~
