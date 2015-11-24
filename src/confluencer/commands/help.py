@@ -22,7 +22,7 @@ import sys
 
 from rudiments.reamed import click
 
-from .. import config
+from .. import config, api
 
 
 @config.cli.command(name='help')
@@ -51,6 +51,19 @@ def help_command(ctx, config_dump=False):
     click.echo(u'The following configuration files are merged in order, if they exist:\n    {0}'.format(
         u'\n    '.join(u'{}   {}'.format(*i) for i in locations),
     ))
+
+    banner('Confluence Stats')
+    with api.context() as cf:
+        try:
+            spaces = list(cf.getall('space'))
+        except api.ERRORS as cause:
+            # Just log and otherwise ignore any errors
+            click.serror("API ERROR: {}", cause)
+        else:
+            click.echo(u'{} spaces found.'.format(len(spaces)))
+            click.echo(u'\nMost recently created:')
+            for space in list(sorted(spaces, key=lambda i: i.id, reverse=True))[:5]:
+                click.echo(u'    {:10} {:>15} {}'.format(space.type, space.key, space.name))
 
     banner('More Help')
     click.echo("Call '{} --help' to get a list of available commands & options.".format(app_name))
