@@ -18,6 +18,7 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 import re
+import logging
 
 import click
 from bunch import Bunch
@@ -76,6 +77,15 @@ def cli(ctx, quiet=False, verbose=False, config_paths=None):  # pylint: disable=
     config.Configuration.from_context(ctx, config_paths)
     ctx.obj.quiet = quiet
     ctx.obj.verbose = verbose
+
+    log_level = logging.INFO
+    if ctx.obj.quiet:
+        log_level = logging.WARNING
+    if ctx.obj.verbose:
+        log_level = logging.DEBUG
+    logging.basicConfig(level=log_level)
+    if ctx.obj.verbose:
+        logging.getLogger("requests").setLevel(logging.DEBUG)
 
 
 # Import sub-commands to define them AFTER `cli` is defined
