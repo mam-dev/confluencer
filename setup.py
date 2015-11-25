@@ -36,7 +36,7 @@
 name = 'confluencer'
 package_name = 'confluencer'
 entry_points = {
-    'console_scripts': ['cfr = confluencer.__main__:cli'],
+    'console_scripts': ['cfr = confluencer.__main__:run'],
 }
 
 

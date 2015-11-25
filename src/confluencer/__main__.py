@@ -34,7 +34,7 @@ config.APP_NAME = __app_name__
 CONTEXT_SETTINGS = dict(
     obj=Bunch(cfg=None, quiet=False, verbose=False),  # namespace for custom stuff
     help_option_names=['-h', '--help'],
-    auto_envvar_prefix=__app_name__.upper().replace('-', '_'),
+    auto_envvar_prefix=config.APP_NAME.upper().replace('-', '_'),
 )
 
 
@@ -88,10 +88,15 @@ def cli(ctx, quiet=False, verbose=False, config_paths=None):  # pylint: disable=
         logging.getLogger("requests").setLevel(logging.DEBUG)
 
 
+def run():
+    """Call main command."""
+    cli.main(prog_name=config.APP_NAME)
+
+
 # Import sub-commands to define them AFTER `cli` is defined
 config.cli = cli
 from . import commands as _  # noqa pylint: disable=unused-import
 
 if __name__ == "__main__":  # imported via "python -m"?
     __package__ = 'confluencer'  # pylint: disable=redefined-builtin
-    cli()  # pylint: disable=no-value-for-parameter
+    run()
