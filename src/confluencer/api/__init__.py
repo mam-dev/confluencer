@@ -18,7 +18,10 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 import os
+import re
 import sys
+import base64
+import struct
 import logging
 from contextlib import contextmanager
 
@@ -27,11 +30,34 @@ from bunch import bunchify
 from rudiments.reamed import click
 
 from .. import __version__ as version
+from .._compat import text_type, urlparse, urlunparse, parse_qs, urlencode
 
 
 ERRORS = (
     requests.RequestException,
 )
+
+
+def page_id_from_tiny_link(uri, _re=re.compile(r'/x/([-_A-Za-z0-9]+)')):
+    """ Extract the page ID from a so-called *tiny link*.
+
+        See `this answer <https://answers.atlassian.com/questions/87971/what-is-the-algorithm-used-to-create-the-tiny-links>`
+        for details.
+    """
+    matched = _re.search(uri)
+    if matched:
+        tiny_id = matched.group(1)
+        if isinstance(tiny_id, text_type):
+            tiny_id = tiny_id.encode('ascii')
+        page_id_bytes = (base64.urlsafe_b64decode(tiny_id) + b'\0\0\0\0')[:4]
+        return struct.unpack('<L', page_id_bytes)[0]
+    else:
+        raise ValueError("Not a tiny link: {}".format(uri))
+
+
+def tiny_id(page_id):
+    """Return *tiny link* ID for the given page ID."""
+    return base64.urlsafe_b64encode(struct.pack('<L', int(page_id)).rstrip(b'\0')).rstrip('=')
 
 
 @contextmanager
@@ -73,10 +99,37 @@ class ConfluenceAPI(object):
     def url(self, path):
         """Build an API URL from partial paths."""
         url = path
+
+        # Fully qualify partial URLs
         if not url.startswith('/rest/api/') and '://' not in url:
             url = '/rest/api/' + url.lstrip('/')
         if not url.startswith('http'):
             url = self.base_url + url
+
+        if '/rest/api/' not in url:
+            # Parse and rewrite URLs of the following forms:
+            #   https://confluence.example.com/x/TTTTT
+            #   https://confluence.example.com/pages/viewpage.action?pageId=#######
+            scheme, netloc, url_path, params, query, fragment = urlparse(url)
+            query = parse_qs(query or '')
+            #print((scheme, netloc, url_path, params, query, fragment))
+
+            if url_path.endswith('/pages/viewpage.action'):
+                # Page link with ID
+                page_id = int(query.pop('pageId', [0])[0])
+                if page_id:
+                    url_path = '{}/rest/api/content/{}'.format(url_path.split('/pages/')[0], page_id)
+                else:
+                    raise ValueError("Missing 'pageId' in malformed URL '{}'".format(path))
+            elif 'x' in url_path.lstrip('/').split('/')[:2]:
+                # Tiny link
+                page_id = page_id_from_tiny_link(url_path)
+                url_path = '{}/rest/api/content/{}'.format(url_path.split('/x/')[0], page_id)
+            else:
+                raise ValueError("Cannot create API endpoint from malformed URL '{}'".format(path))
+
+            url = urlunparse((scheme, netloc, url_path, params, urlencode(query), fragment))
+
         return url
 
     def get(self, path, **params):
