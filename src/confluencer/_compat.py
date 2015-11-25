@@ -149,6 +149,7 @@ except ImportError:
     from urllib import quote as url_quote
 
 try:
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, urlunparse, parse_qs, parse_qsl, urlencode
 except ImportError:
-    from urlparse import urlparse
+    from urlparse import urlparse, urlunparse, parse_qs, parse_qsl
+    from urllib import urlencode
