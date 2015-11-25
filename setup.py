@@ -124,7 +124,7 @@ def _build_metadata(): # pylint: disable=too-many-locals, too-many-branches
             with io.open(srcfile(filename), encoding='utf-8') as handle:
                 for line in handle:
                     line = line.strip()
-                    if line and not line.startswith('#'):
+                    if line and not line.startswith('#') and ';' not in line:
                         if any(line.startswith(i) for i in ('-e', 'http://', 'https://')):
                             line = line.split('#egg=')[1]
                         requires[key].append(line)
