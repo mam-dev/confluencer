@@ -29,5 +29,15 @@ from .. import config, api
 @click.option('-R', '--recursive', is_flag=True, default=False, help='Handle all descendants.')
 @click.argument('pages', metavar='‹page-url›…', nargs=-1)
 @click.pass_context
-def tidy(ctx):
+def tidy(ctx, pages, recursive=False):
     """Tidy pages after cut&paste migration from other wikis."""
+    with api.context() as cf:
+        for page_url in pages:
+            try:
+                data = cf.get(page_url, expand='body.storage')
+            except api.ERRORS as cause:
+                # Just log and otherwise ignore any errors
+                click.serror("API ERROR: {}", cause)
+            else:
+                ctx.obj.log.info('%d attributes', len(data))
+                print(data)
