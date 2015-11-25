@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=bad-continuation, unused-import
-""" CLI commands.
+# pylint: disable=bad-continuation, too-few-public-methods
+""" 'tidy' command.
 """
 # Copyright ©  2015 1&1 Group <git@1and1.com>
 #
@@ -17,6 +17,17 @@
 # limitations under the License.
 from __future__ import absolute_import, unicode_literals, print_function
 
-# Load the command modules for registration
-from . import help  # noqa pylint: disable=redefined-builtin
-from . import tidy
+import os
+import sys
+
+from rudiments.reamed import click
+
+from .. import config, api
+
+
+@config.cli.command()
+@click.option('-R', '--recursive', is_flag=True, default=False, help='Handle all descendants.')
+@click.argument('pages', metavar='‹page-url›…', nargs=-1)
+@click.pass_context
+def tidy(ctx):
+    """Tidy pages after cut&paste migration from other wikis."""
