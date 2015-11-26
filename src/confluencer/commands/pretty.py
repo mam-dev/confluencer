@@ -20,6 +20,8 @@ from __future__ import absolute_import, unicode_literals, print_function
 import os
 import sys
 
+from lxml import etree
+from xml.sax.saxutils import quoteattr
 from rudiments.reamed import click
 
 from .. import config, api
@@ -46,5 +48,17 @@ def pretty(ctx, pages, markup, recursive=False):
                 # Just log and otherwise ignore any errors
                 click.serror("API ERROR: {}", cause)
             else:
-                ctx.obj.log.info('%d attributes', len(data))
-                print(data)
+                #print(data)
+                parser = etree.XMLParser(remove_blank_text=True)
+                attrs = {
+                    'id': 'page-' + data.id,
+                    'href': data._links.base + data._links.tinyui,
+                    'status': data.status,
+                    'title': data.title,
+                }
+                xmldoc = u'<{root} {attrs}>{body}</{root}>'.format(
+                    root=content_format,
+                    attrs=' '.join('{}={}'.format(k, quoteattr(v)) for k, v in sorted(attrs.items())),
+                    body=data.body.get(content_format).value)
+                root = etree.fromstring(xmldoc, parser)
+                root.getroottree().write(sys.stdout, encoding='utf8', pretty_print=True)
