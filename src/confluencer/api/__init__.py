@@ -20,6 +20,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 import os
 import re
 import sys
+import json
 import base64
 import struct
 import logging
@@ -30,7 +31,7 @@ from bunch import bunchify
 from rudiments.reamed import click
 
 from .. import __version__ as version
-from .._compat import text_type, urlparse, urlunparse, parse_qs, urlencode
+from .._compat import text_type, urlparse, urlunparse, parse_qs, urlencode, unquote_plus
 
 
 ERRORS = (
@@ -121,6 +122,25 @@ class ConfluenceAPI(object):
                     url_path = '{}/rest/api/content/{}'.format(url_path.split('/pages/')[0], page_id)
                 else:
                     raise ValueError("Missing 'pageId' in malformed URL '{}'".format(path))
+            elif 'display' in url_path.lstrip('/').split('/')[:2]:
+                # Page link with title
+                matched = re.search(r'/display/([^/]+)/([^/]+)', url_path)
+                if matched:
+                    url_path = '{}/rest/api/content/search'.format(url_path.split('/display/')[0])
+                    title = unquote_plus(matched.group(2))
+                    search_query = dict(
+                        cql='title="{}"'.format(title.replace('"', '?')),
+                        cqlcontext=json.dumps(dict(spaceKey=matched.group(1))),
+                    )
+                    search_url = urlunparse((scheme, netloc, url_path, params, urlencode(search_query), fragment))
+                    found = self.get(search_url)
+                    if found.size == 1:
+                        url_path, url = None, found.results[0]._links.self
+                    else:
+                        raise ValueError("{} results while searching for page with URL '{}', query was:\n{}"
+                                         .format('Multiple' if found.size else 'No', path, search_url))
+                else:
+                    raise ValueError("Missing '.../display/SPACE/TITLE' in malformed URL '{}'".format(path))
             elif 'x' in url_path.lstrip('/').split('/')[:2]:
                 # Tiny link
                 page_id = page_id_from_tiny_link(url_path)
@@ -128,7 +148,8 @@ class ConfluenceAPI(object):
             else:
                 raise ValueError("Cannot create API endpoint from malformed URL '{}'".format(path))
 
-            url = urlunparse((scheme, netloc, url_path, params, urlencode(query), fragment))
+            if url_path:
+                url = urlunparse((scheme, netloc, url_path, params, urlencode(query), fragment))
 
         return url
 
