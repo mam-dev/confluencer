@@ -17,13 +17,12 @@
 # limitations under the License.
 from __future__ import absolute_import, unicode_literals, print_function
 
-import os
 import re
 import sys
 import htmlentitydefs
-
-from lxml import etree
 from xml.sax.saxutils import quoteattr
+
+from lxml.etree import fromstring, HTMLParser, XMLParser, XMLSyntaxError  # pylint: disable=no-name-in-module
 from rudiments.reamed import click
 
 from .. import config, api
@@ -68,10 +67,10 @@ def pretty(ctx, pages, markup, recursive=False):
                     attrs=' '.join('{}={}'.format(k, quoteattr(v)) for k, v in sorted(attrs.items())),
                     body=html_unescape(data.body.get(content_format).value))
 
-                parser = (etree.XMLParser if content_format == 'storage' else etree.HTMLParser)(remove_blank_text=True)
+                parser = (XMLParser if content_format == 'storage' else HTMLParser)(remove_blank_text=True)
                 try:
-                    root = etree.fromstring(xmldoc, parser)
-                except etree.XMLSyntaxError as cause:
+                    root = fromstring(xmldoc, parser)
+                except XMLSyntaxError as cause:
                     raise click.LoggedFailure('{}\n{}'.format(
                         cause, '\n'.join(['{:7d} {}'.format(i+1, k) for i, k in enumerate(xmldoc.splitlines())])
                     ))

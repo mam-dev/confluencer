@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # pylint: disable=bad-whitespace, attribute-defined-outside-init, invalid-name
-# pylint: disable=too-many-statements
+# pylint: disable=too-many-statements, wrong-import-position
 """
     Confluencer – A CLI tool to automate common Confluence maintenance tasks and content publishing.
 

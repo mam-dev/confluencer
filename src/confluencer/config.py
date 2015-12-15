@@ -54,7 +54,7 @@ def version_info(ctx=None):
     except ImportError:
         pass
     else:
-        for dist in pkg_resources.working_set:
+        for dist in iter(pkg_resources.working_set):
             scripts = dist.get_entry_map().get('console_scripts') or {}
             for _, entry_point in iteritems(scripts):
                 if entry_point.module_name == (__package__ + '.__main__'):
