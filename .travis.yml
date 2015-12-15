@@ -15,6 +15,10 @@ python:
 #    allow_failures:
 #        - python: "3.4"
 
+env:
+    - CONFLUENCE_BASE_URL=http://example.com/
+#    - CONFLUENCE_BASE_URL=https://confluence.atlassian.com/
+
 # command to install dependencies
 install:
     - "pip install -r dev-requirements.txt"
