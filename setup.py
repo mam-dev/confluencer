@@ -46,6 +46,7 @@ import io
 import os
 import re
 import sys
+import json
 import textwrap
 from collections import defaultdict
 
@@ -189,7 +190,6 @@ project = _build_metadata()
 __all__ = ['project', 'project_root', 'package_name', 'srcfile']
 if __name__ == '__main__':
     if '--metadata' in sys.argv[:2]:
-        import json
         json.dump(project, sys.stdout, default=repr, indent=4, sort_keys=True)
         sys.stdout.write('\n')
     else:
