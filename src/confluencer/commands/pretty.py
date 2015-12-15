@@ -21,8 +21,8 @@ import re
 import sys
 try:
     import html.entities as htmlentitydefs
-except ImportError:
-    import htmlentitydefs
+except ImportError:  # Python 2
+    import htmlentitydefs  # pylint: disable=import-error
 from xml.sax.saxutils import quoteattr
 
 from lxml.etree import fromstring, HTMLParser, XMLParser, XMLSyntaxError  # pylint: disable=no-name-in-module

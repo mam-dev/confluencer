@@ -91,7 +91,7 @@ class ConfluenceAPI(object):
             try:
                 import http.client as http_client
             except ImportError:  # Python 2
-                import httplib as http_client
+                import httplib as http_client  # pylint: disable=import-error
             http_client.HTTPConnection.debuglevel = 1
 
         self.session = requests.Session()
