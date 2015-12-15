@@ -58,7 +58,7 @@ def page_id_from_tiny_link(uri, _re=re.compile(r'/x/([-_A-Za-z0-9]+)')):
 
 def tiny_id(page_id):
     """Return *tiny link* ID for the given page ID."""
-    return base64.urlsafe_b64encode(struct.pack('<L', int(page_id)).rstrip(b'\0')).rstrip('=')
+    return base64.urlsafe_b64encode(struct.pack('<L', int(page_id)).rstrip(b'\0')).rstrip(b'=').decode('ascii')
 
 
 @contextmanager
@@ -171,7 +171,7 @@ class ConfluenceAPI(object):
             :param params: Request parameters.
         """
         params = params.copy()
-        pos, outer_limit = 0, params.pop('limit', sys.maxint)
+        pos, outer_limit = 0, params.pop('limit', sys.maxsize)
         while path:
             response = self.get(path, **params)
             for item in response.get('results', []):

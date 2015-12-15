@@ -19,7 +19,10 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import re
 import sys
-import htmlentitydefs
+try:
+    import html.entities as htmlentitydefs
+except ImportError:
+    import htmlentitydefs
 from xml.sax.saxutils import quoteattr
 
 from lxml.etree import fromstring, HTMLParser, XMLParser, XMLSyntaxError  # pylint: disable=no-name-in-module
