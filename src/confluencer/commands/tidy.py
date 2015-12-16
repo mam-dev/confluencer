@@ -19,6 +19,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import re
 
+from bunch import bunchify
 from rudiments.reamed import click
 
 from .. import config, api
@@ -42,10 +43,41 @@ class ConfluencePage(object):
 
     def __init__(self, cf, url, markup='storage'):
         """Load the given page."""
+        self.cf = cf
         self.url = url
         self.markup = markup
-        self._data = cf.get(self.url, expand='body.' + self.markup)
-        self.body = self._data.body.storage.value
+        self._data = cf.get(self.url, expand='space,version,body.' + self.markup)
+        self.body = self._data.body[self.markup].value
+
+    def update(self, body=None):
+        """Update a page's content."""
+        assert self.markup == 'storage', "Cannot update non-storage page markup!"
+        if body is None:
+            body = self.body
+        if body == self._data.body[self.markup].value:
+            return  # No changes
+
+        data = {
+            #'id': self._data.id,
+            'type': 'page',
+            'space': {'key': self._data.space.key},
+            'title': self._data.title,
+            'version': {'number': self._data.version.number + 1},
+            'body': {
+                'storage': {
+                    'value': body,
+                    'representation': self.markup,
+                }
+            },
+            'expand': 'version',
+        }
+        response = self.cf.session.put(self._data._links.self, json=data)
+        response.raise_for_status()
+        ##page = response.json(); print(page)
+        result = bunchify(response.json())
+        self._data.body[self.markup].value = body
+        self._data.version = result.version
+        return result
 
 
 @config.cli.command()
@@ -63,11 +95,14 @@ def tidy(ctx, pages, recursive=False):
                 click.serror("API ERROR: {}", cause)
             else:
                 ctx.obj.log.info('%d attributes', len(page._data))
-                #print(page._data)
-                print(page.body)
+                ##print(page._data); xxx
+                ##print(page.body)
+                body = page.body
                 for rule, subst in REGEX_RULES:
-                    page.body, count = rule.subn(subst, page.body)
+                    body, count = rule.subn(subst, body)
                     if count:
                         ctx.obj.log.info('Replaced %d matches of %r', count, rule.pattern)
-                print('')
-                print(page.body)
+                ##print('\n' + page.body)
+                result = page.update(body)
+                if result:
+                    ctx.obj.log.info('Updated page#{id} to version #{version.number}'.format(**result))
