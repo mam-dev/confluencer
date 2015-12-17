@@ -18,11 +18,20 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 import re
+import difflib
+try:
+    import html.entities as htmlentitydefs
+except ImportError:  # Python 2
+    import htmlentitydefs  # pylint: disable=import-error
+from xml.sax.saxutils import quoteattr
 
+import arrow
 from bunch import bunchify
+from lxml.etree import fromstring, HTMLParser, XMLParser, XMLSyntaxError  # pylint: disable=no-name-in-module
 from rudiments.reamed import click
 
 from .. import config, api
+from .._compat import StringIO, html_unescape
 
 
 # Simple replacement rules, order is important!
@@ -38,8 +47,40 @@ REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
 ])
 
 
+def _pretty_xml(body, content_format='storage'):
+    """Pretty-print the given page body and return a list of lines."""
+    attrs = {
+        'xmlns:ac': 'http://www.atlassian.com/schema/confluence/4/ac/',
+        'xmlns:ri': 'http://www.atlassian.com/schema/confluence/4/ri/',
+    }
+    body = re.sub(r'&(?!(amp|lt|gt|quot|apos))([a-z]+);',
+                  lambda cref: '&#{};'.format(htmlentitydefs.name2codepoint[cref.group(2)]), body)
+    #print(body.encode('utf8'))
+    xmldoc = u'<{root} {attrs}>{body}</{root}>'.format(
+        root=content_format,
+        attrs=' '.join('{}={}'.format(k, quoteattr(v)) for k, v in sorted(attrs.items())),
+        body=html_unescape(body))
+
+    parser = (XMLParser if content_format == 'storage' else HTMLParser)(remove_blank_text=True)
+    try:
+        root = fromstring(xmldoc, parser)
+    except XMLSyntaxError as cause:
+        raise click.LoggedFailure('{}\n{}'.format(
+            cause, '\n'.join(['{:7d} {}'.format(i+1, k) for i, k in enumerate(xmldoc.splitlines())])
+        ))
+    prettyfied = StringIO()
+    root.getroottree().write(prettyfied, encoding='utf8', pretty_print=True, xml_declaration=False)
+    return prettyfied.getvalue().splitlines()
+
+
 class ConfluencePage(object):
     """A page that holds enough state so it can be modified."""
+
+    DIFF_COLS = {
+        '+': 'green',
+        '-': 'red',
+        '@': 'yellow',
+    }
 
     def __init__(self, cf, url, markup='storage'):
         """Load the given page."""
@@ -48,6 +89,10 @@ class ConfluencePage(object):
         self.markup = markup
         self._data = cf.get(self.url, expand='space,version,body.' + self.markup)
         self.body = self._data.body[self.markup].value
+
+    @property
+    def id(self):
+        return self._data.id
 
     @property
     def space_key(self):
@@ -98,7 +143,17 @@ class ConfluencePage(object):
             click.secho('No changes to "{0}"'.format(self.title), fg='green')
             return
 
-        click.secho('Changes in "{0}"'.format(self.title), fg='red')
+        diff = difflib.unified_diff(
+            _pretty_xml(self.body, self.markup),
+            _pretty_xml(changed, self.markup),
+            'v. {0} of "{1}"'.format(self.version, self.title),
+            'v. {0} of "{1}"'.format(self.version + 1, self.title),
+            arrow.get(self._data.version.when).replace(microsecond=0).isoformat(sep=b' '),
+            arrow.now().replace(microsecond=0).isoformat(sep=b' '),
+            lineterm='', n=2)
+        for line in diff:
+            fg = self.DIFF_COLS.get(line and line[0], None)
+            click.secho(line, fg=fg)
 
 
 @config.cli.command()
@@ -131,9 +186,11 @@ def tidy(ctx, pages, diff=False, dry_run=False, recursive=False):
                 else:
                     if diff or dry_run:
                         page.dump_diff(body)
-                    if not dry_run:
+                    if dry_run:
+                        ctx.obj.log.info('WOULD save page#{0} "{1}" as v. {2}'.format(page.id, page.title, page.version + 1))
+                    else:
                         result = page.update(body)
                         if result:
-                            ctx.obj.log.info('Updated page#{id} "{title}" to version #{version.number}'.format(**result))
+                            ctx.obj.log.info('Updated page#{id} "{title}" to v. {version.number}'.format(**result))
                         else:
                             ctx.obj.log.info('Changes not saved for "%s"', page.title)
