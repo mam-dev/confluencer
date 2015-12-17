@@ -12,7 +12,18 @@ A CLI tool to automate common Confluence maintenance tasks and content publishin
 
 ## Overview
 
-…
+The ``confluencer`` command line tool (or ``cfr`` for short) allows you to
+control your Confluence installation from a shell prompt, and thus automate
+(mass) content changes and reports.
+
+For example, ``cfr tidy`` applies rules to remove artifacts from a page's body
+left behind if you cut&copy contents from other sources (especially *FosWiki* pages).
+
+The ``confluencer.api`` Python package can be used in your own scripts to implement
+more complex custom use-cases that are not covered by the provided commands.
+It provides helpers like converting an URL as found in the web interface (i.e.
+your browser's location bar) into an API one, and abstractions for typical
+*Confluence* objects like pages and spaces.
 
 
 ## Installation
@@ -45,7 +56,7 @@ grep /.bash_completion.d/$cmdname.sh ~/.bash_completion >/dev/null \
 
 ## Usage
 
-…
+See the [main documentation](http://confluencer.readthedocs.org/) at *Read the Docs*.
 
 
 ## Contributing
