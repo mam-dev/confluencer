@@ -26,15 +26,15 @@ from .. import config, api
 
 
 # Simple replacement rules, order is important!
-REGEX_RULES = ((re.compile(_rule), _subst) for _rule, _subst in [
-    # FosWiki: 'tok' spans in front of headers
-    (r'(?<=<h.>)<span class="tok">&nbsp;</span>', ''),
-    # FosWiki: Section edit icons at the end of headers
-    (r' *<a href="[^"]+"><ac:image [^>]+><ri:url ri:value="[^"]+/EditChapterPlugin/pencil.png" ?/></ac:image></a>(?=</span></h)', ''),
-    # FosWiki: "Edit Chapter Plugin" spans
-    (r'(?<=<h.>)<span class="ecpHeading">([^<]+)</span>(?=</h.>)', r'\1'),
-    # FosWiki: Residual leading whitespace in headers
-    (r'(?<=<h.>) +', ''),
+REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
+    ("FosWiki: 'tok' spans in front of headers",
+     r'(?<=<h.>)<span class="tok">&nbsp;</span>', ''),
+    ("FosWiki: Section edit icons at the end of headers",
+     r' *<a href="[^"]+"><ac:image [^>]+><ri:url ri:value="[^"]+/EditChapterPlugin/pencil.png" ?/></ac:image></a>(?=</span></h)', ''),
+    ("FosWiki: 'Edit Chapter Plugin' spans",
+     r'(?<=<h.>)<span class="ecpHeading">([^<]+)</span>(?=</h.>)', r'\1'),
+    ("FosWiki: Residual leading whitespace in headers",
+     r'(?<=<h.>) +', ''),
 ])
 
 
@@ -49,6 +49,18 @@ class ConfluencePage(object):
         self._data = cf.get(self.url, expand='space,version,body.' + self.markup)
         self.body = self._data.body[self.markup].value
 
+    @property
+    def space_key(self):
+        return self._data.space.key
+
+    @property
+    def title(self):
+        return self._data.title
+
+    @property
+    def version(self):
+        return self._data.version.number
+
     def update(self, body=None):
         """Update a page's content."""
         assert self.markup == 'storage', "Cannot update non-storage page markup!"
@@ -60,9 +72,9 @@ class ConfluencePage(object):
         data = {
             #'id': self._data.id,
             'type': 'page',
-            'space': {'key': self._data.space.key},
-            'title': self._data.title,
-            'version': {'number': self._data.version.number + 1},
+            'space': {'key': self.space_key},
+            'title': self.title,
+            'version': {'number': self.version + 1},
             'body': {
                 'storage': {
                     'value': body,
@@ -81,10 +93,13 @@ class ConfluencePage(object):
 
 
 @config.cli.command()
+@click.option('--diff', is_flag=True, default=False, help='Show differences after tidying.')
+@click.option('-n', '--no-save', '--dry-run', is_flag=True, default=False,
+              help="Only show differences after tidying, don't apply them.")
 @click.option('-R', '--recursive', is_flag=True, default=False, help='Handle all descendants.')
 @click.argument('pages', metavar='‹page-url›…', nargs=-1)
 @click.pass_context
-def tidy(ctx, pages, recursive=False):
+def tidy(ctx, pages, diff=False, dry_run=False, recursive=False):
     """Tidy pages after cut&paste migration from other wikis."""
     with api.context() as cf:
         for page_url in pages:
@@ -94,15 +109,22 @@ def tidy(ctx, pages, recursive=False):
                 # Just log and otherwise ignore any errors
                 click.serror("API ERROR: {}", cause)
             else:
-                ctx.obj.log.info('%d attributes', len(page._data))
                 ##print(page._data); xxx
                 ##print(page.body)
                 body = page.body
-                for rule, subst in REGEX_RULES:
+                for name, rule, subst in REGEX_RULES:
                     body, count = rule.subn(subst, body)
                     if count:
-                        ctx.obj.log.info('Replaced %d matches of %r', count, rule.pattern)
+                        ctx.obj.log.info('Replaced %d matche(s) of "%s"', count, name)
                 ##print('\n' + page.body)
-                result = page.update(body)
-                if result:
-                    ctx.obj.log.info('Updated page#{id} to version #{version.number}'.format(**result))
+                if body == page.body:
+                    ctx.obj.log.info('No changes for "%s"', page.title)
+                else:
+                    if diff or dry_run:
+                        pass  # TODO: show diff
+                    if not dry_run:
+                        result = page.update(body)
+                        if result:
+                            ctx.obj.log.info('Updated page#{id} "{title}" to version #{version.number}'.format(**result))
+                        else:
+                            ctx.obj.log.info('Changes not saved for "%s"', page.title)
