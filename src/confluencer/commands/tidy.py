@@ -92,6 +92,15 @@ class ConfluencePage(object):
         return result
 
 
+    def dump_diff(self, changed):
+        """Dump a diff to terminal between changed and stored body."""
+        if self.body == changed:
+            click.secho('No changes to "{0}"'.format(self.title), fg='green')
+            return
+
+        click.secho('Changes in "{0}"'.format(self.title), fg='red')
+
+
 @config.cli.command()
 @click.option('--diff', is_flag=True, default=False, help='Show differences after tidying.')
 @click.option('-n', '--no-save', '--dry-run', is_flag=True, default=False,
@@ -121,7 +130,7 @@ def tidy(ctx, pages, diff=False, dry_run=False, recursive=False):
                     ctx.obj.log.info('No changes for "%s"', page.title)
                 else:
                     if diff or dry_run:
-                        pass  # TODO: show diff
+                        page.dump_diff(body)
                     if not dry_run:
                         result = page.update(body)
                         if result:
