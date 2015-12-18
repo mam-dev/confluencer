@@ -45,7 +45,7 @@ REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
     ("FosWiki: Residual leading whitespace in headers",
      r'(?<=<h.>) +', ''),
     ("FosWiki: Replace TOC div with macro",
-     r'(<a name="foswikiTOC"/>)?<div class="foswikiToc">.*?</div>', '''
+     r'(<a name="foswikiTOC" ?/>)?<div class="foswikiToc">.*?</div>', '''
           <ac:structured-macro ac:name="panel" ac:schema-version="1">
             <ac:parameter ac:name="title">Contents</ac:parameter>
             <ac:rich-text-body>
@@ -55,6 +55,15 @@ REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
             </ac:rich-text-body>
           </ac:structured-macro>'''),
 ])
+
+
+def _apply_regex_rules(body, log=None):
+    """Return tidied body after applying regex rules."""
+    for name, rule, subst in REGEX_RULES:
+        body, count = rule.subn(subst, body)
+        if count and log:
+            log.info('Replaced %d matche(s) of "%s"', count, name)
+    return body
 
 
 def _pretty_xml(body, content_format='storage'):
@@ -184,13 +193,7 @@ def tidy(ctx, pages, diff=False, dry_run=False, recursive=False):
                 click.serror("API ERROR: {}", cause)
             else:
                 ##print(page._data); xxx
-                ##print(page.body)
-                body = page.body
-                for name, rule, subst in REGEX_RULES:
-                    body, count = rule.subn(subst, body)
-                    if count:
-                        ctx.obj.log.info('Replaced %d matche(s) of "%s"', count, name)
-                ##print('\n' + page.body)
+                body = _apply_regex_rules(page.body, log=ctx.obj.log)
                 if body == page.body:
                     ctx.obj.log.info('No changes for "%s"', page.title)
                 else:
