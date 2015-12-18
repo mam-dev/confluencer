@@ -56,6 +56,7 @@ def pretty(ctx, pages, markup, recursive=False):
                 #print(data)
                 attrs = {
                     'xmlns:ac': 'http://www.atlassian.com/schema/confluence/4/ac/',
+                    'xmlns:ri': 'http://www.atlassian.com/schema/confluence/4/ri/',
                     'id': 'page-' + data.id,
                     'href': data._links.base + data._links.tinyui,
                     'status': data.status,
