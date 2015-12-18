@@ -63,13 +63,13 @@ def pretty(ctx, pages, markup, recursive=False):
                     'title': data.title,
                 }
                 body = data.body.get(content_format).value
-                body = re.sub(r'&(?!(amp|lt|gt|quot|apos))([a-z]+);',
+                body = re.sub(r'&(?!(amp|lt|gt|quot|apos))([a-zA-Z0-9]+);',
                               lambda cref: '&#{};'.format(htmlentitydefs.name2codepoint[cref.group(2)]), body)
                 #print(body.encode('utf8'))
                 xmldoc = u'<{root} {attrs}>{body}</{root}>'.format(
                     root=content_format,
                     attrs=' '.join('{}={}'.format(k, quoteattr(v)) for k, v in sorted(attrs.items())),
-                    body=html_unescape(data.body.get(content_format).value))
+                    body=body)
 
                 parser = (XMLParser if content_format == 'storage' else HTMLParser)(remove_blank_text=True)
                 try:

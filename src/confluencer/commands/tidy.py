@@ -54,6 +54,10 @@ REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
               </p>
             </ac:rich-text-body>
           </ac:structured-macro>'''),
+    #("FosWiki: Replace HTML '<pre>' with 'code' macro",
+    # r'<pre>', '<div><ac:structured-macro ac:name="code" ac:schema-version="1"><ac:plain-text-body>![CDATA['),
+    #("FosWiki: Replace HTML '</pre>' with 'code' macro",
+    # r'</pre>', ']]</ac:plain-text-body></ac:structured-macro></div>'),
 ])
 
 
@@ -72,13 +76,13 @@ def _pretty_xml(body, content_format='storage'):
         'xmlns:ac': 'http://www.atlassian.com/schema/confluence/4/ac/',
         'xmlns:ri': 'http://www.atlassian.com/schema/confluence/4/ri/',
     }
-    body = re.sub(r'&(?!(amp|lt|gt|quot|apos))([a-z]+);',
+    body = re.sub(r'&(?!(amp|lt|gt|quot|apos))([a-zA-Z0-9]+);',
                   lambda cref: '&#{};'.format(htmlentitydefs.name2codepoint[cref.group(2)]), body)
     #print(body.encode('utf8'))
     xmldoc = u'<{root} {attrs}>{body}</{root}>'.format(
         root=content_format,
         attrs=' '.join('{}={}'.format(k, quoteattr(v)) for k, v in sorted(attrs.items())),
-        body=html_unescape(body))
+        body=body)
 
     parser = (XMLParser if content_format == 'storage' else HTMLParser)(remove_blank_text=True)
     try:
