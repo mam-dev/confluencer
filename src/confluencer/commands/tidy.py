@@ -44,6 +44,16 @@ REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
      r'(?<=<h.>)<span class="ecpHeading">([^<]+)</span>(?=</h.>)', r'\1'),
     ("FosWiki: Residual leading whitespace in headers",
      r'(?<=<h.>) +', ''),
+    ("FosWiki: Replace TOC div with macro",
+     r'(<a name="foswikiTOC"/>)?<div class="foswikiToc">.*?</div>', '''
+          <ac:structured-macro ac:name="panel" ac:schema-version="1">
+            <ac:parameter ac:name="title">Contents</ac:parameter>
+            <ac:rich-text-body>
+              <p>
+                <ac:structured-macro ac:name="toc" ac:schema-version="1"/>
+              </p>
+            </ac:rich-text-body>
+          </ac:structured-macro>'''),
 ])
 
 
