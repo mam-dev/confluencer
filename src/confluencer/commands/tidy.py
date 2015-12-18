@@ -36,6 +36,8 @@ from .._compat import StringIO, html_unescape
 
 # Simple replacement rules, order is important!
 REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
+    ("FosWiki: Remove static section numbering",
+     r'(?<=<h.>)[0-9.]+ ?(?=<span class="tok">&nbsp;</span>)', ''),
     ("FosWiki: 'tok' spans in front of headers",
      r'(?<=<h.>)<span class="tok">&nbsp;</span>', ''),
     ("FosWiki: Section edit icons at the end of headers",
