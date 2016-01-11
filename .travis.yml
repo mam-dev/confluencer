@@ -24,6 +24,12 @@ install:
     - "pip install -r dev-requirements.txt"
     - "python setup.py develop -U"
 
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 # command to run tests
 script: invoke --echo --pty ci
 
