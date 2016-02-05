@@ -99,7 +99,17 @@ class ConfluenceAPI(object):
         self.session.headers['User-Agent'] = 'Confluencer/{} [{}]'.format(version, requests.utils.default_user_agent())
 
     def url(self, path):
-        """Build an API URL from partial paths."""
+        """ Build an API URL from partial paths.
+
+            Parameters:
+                path (str): Page URL / URI in various formats (tiny, title, id).
+
+            Yields:
+                str: The fully qualified API URL for the page.
+
+            Raises:
+                ValueError: A ``path`` was passed that isn't understood, or malformed.
+        """
         url = path
 
         # Fully qualify partial URLs
@@ -110,8 +120,9 @@ class ConfluenceAPI(object):
 
         if '/rest/api/' not in url:
             # Parse and rewrite URLs of the following forms:
-            #   https://confluence.example.com/x/TTTTT
             #   https://confluence.example.com/pages/viewpage.action?pageId=#######
+            #   https://confluence.example.com/display/SPACEKEY/Page+Title
+            #   https://confluence.example.com/x/TTTTT
             scheme, netloc, url_path, params, query, fragment = urlparse(url)
             query = parse_qs(query or '')
             #print((scheme, netloc, url_path, params, query, fragment))
