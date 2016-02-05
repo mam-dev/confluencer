@@ -193,7 +193,7 @@ class ConfluencePage(object):
     def dump_diff(self, changed):
         """Dump a diff to terminal between changed and stored body."""
         if self.body == changed:
-            click.secho('No changes to "{0}"'.format(self.title), fg='green')
+            click.secho('=== No changes to "{0}"'.format(self.title), fg='green')
             return
 
         diff = difflib.unified_diff(
