@@ -3,6 +3,7 @@
 # pylint: disable=unused-argument, too-few-public-methods, redefined-builtin
 # pylint: disable=no-name-in-module, no-member, undefined-variable
 # pylint: disable=import-error, wrong-import-position, wrong-import-order
+# pylint: disable=ungrouped-imports
 # flake8: noqa
 """
     Some py2/py3 compatibility support based on a stripped down
@@ -86,7 +87,7 @@ if not PY2:
 else:
     unichr = unichr
     text_type = unicode
-    range_type = xrange
+    range_type = xrange  # pylint: disable=redefined-variable-type
     string_types = (str, unicode)
     integer_types = (int, long)
 
@@ -95,7 +96,7 @@ else:
     iteritems = lambda d: d.iteritems()
 
     import cPickle as pickle
-    from cStringIO import StringIO as BytesIO, StringIO
+    from cStringIO import StringIO as BytesIO, StringIO  # pylint: disable=reimported
     NativeStringIO = BytesIO
 
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')

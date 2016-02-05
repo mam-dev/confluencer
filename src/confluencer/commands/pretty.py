@@ -29,7 +29,6 @@ from lxml.etree import fromstring, HTMLParser, XMLParser, XMLSyntaxError  # pyli
 from rudiments.reamed import click
 
 from .. import config, api
-from .._compat import html_unescape
 
 
 CONTENT_FORMATS = dict(view='view', editor='editor', storage='storage', export='export_view', anon='anonymous_export_view')
