@@ -34,6 +34,7 @@ from .. import __version__ as version
 from .._compat import text_type, urlparse, urlunparse, parse_qs, urlencode, unquote_plus
 
 
+# Exceptions that API calls typically emit
 ERRORS = (
     requests.RequestException,
 )
