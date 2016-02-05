@@ -33,8 +33,11 @@ from rudiments.reamed import click
 from .._compat import StringIO
 
 
+# Mapping of CLI content format names to Confluence API names
+CLI_CONTENT_FORMATS = dict(view='view', editor='editor', storage='storage', export='export_view', anon='anonymous_export_view')
+
 # Simple replacement rules, order is important!
-REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
+TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
     ("FosWiki: Remove static section numbering",
      r'(?<=<h.>)[0-9.]+ ?(?=<span class="tok">&nbsp;</span>)', ''),
     ("FosWiki: 'tok' spans in front of headers",
@@ -63,36 +66,42 @@ REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
 ])
 
 
-def _apply_regex_rules(body, log=None):
+def _apply_tidy_regex_rules(body, log=None):
     """Return tidied body after applying regex rules."""
-    for name, rule, subst in REGEX_RULES:
+    for name, rule, subst in TIDY_REGEX_RULES:
         body, count = rule.subn(subst, body)
         if count and log:
             log.info('Replaced %d matche(s) of "%s"', count, name)
     return body
 
 
-def _pretty_xml(body, content_format='storage'):
-    """Pretty-print the given page body and return a list of lines."""
-    attrs = {
+def _make_etree(body, content_format='storage', attrs=None):
+    """Create an ElementTree from a page's body."""
+    attrs = (attrs or {}).copy()
+    attrs.update({
         'xmlns:ac': 'http://www.atlassian.com/schema/confluence/4/ac/',
         'xmlns:ri': 'http://www.atlassian.com/schema/confluence/4/ri/',
-    }
-    body = re.sub(r'&(?!(amp|lt|gt|quot|apos))([a-zA-Z0-9]+);',
+    })
+    xml_body = re.sub(r'&(?!(amp|lt|gt|quot|apos))([a-zA-Z0-9]+);',
                   lambda cref: '&#{};'.format(htmlentitydefs.name2codepoint[cref.group(2)]), body)
     #print(body.encode('utf8'))
     xmldoc = u'<{root} {attrs}>{body}</{root}>'.format(
         root=content_format,
         attrs=' '.join('{}={}'.format(k, quoteattr(v)) for k, v in sorted(attrs.items())),
-        body=body)
+        body=xml_body)
 
     parser = (XMLParser if content_format == 'storage' else HTMLParser)(remove_blank_text=True)
     try:
-        root = fromstring(xmldoc, parser)
+        return fromstring(xmldoc, parser)
     except XMLSyntaxError as cause:
         raise click.LoggedFailure('{}\n{}'.format(
             cause, '\n'.join(['{:7d} {}'.format(i+1, k) for i, k in enumerate(xmldoc.splitlines())])
         ))
+
+
+def _pretty_xml(body, content_format='storage', attrs=None):
+    """Pretty-print the given page body and return a list of lines."""
+    root = _make_etree(body, content_format=content_format, attrs=attrs)
     prettyfied = StringIO()
     root.getroottree().write(prettyfied, encoding='utf8', pretty_print=True, xml_declaration=False)
     return prettyfied.getvalue().splitlines()
@@ -135,10 +144,20 @@ class ConfluencePage(object):
         """The page's version number in history."""
         return self._data.version.number
 
+    def etree(self):
+        """Parse the page's body into an ElementTree."""
+        attrs = {
+            'id': 'page-' + self._data.id,
+            'href': self._data._links.base + self._data._links.tinyui,
+            'status': self._data.status,
+            'title': self._data.title,
+        }
+        return _make_etree(self.body, content_format=self.markup, attrs=attrs)
+
     def tidy(self, log=None):
         """Return a tidy copy of this page's body."""
         assert self.markup == 'storage', "Can only clean up pages in storage format!"
-        return _apply_regex_rules(self.body, log=log)
+        return _apply_tidy_regex_rules(self.body, log=log)
 
     def update(self, body=None):
         """Update a page's content."""
