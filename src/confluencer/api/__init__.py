@@ -151,8 +151,9 @@ class ConfluenceAPI(object):
                     else:
                         raise ValueError("{} results while searching for page with URL '{}'{}, query was:\n{}"
                                          .format('Multiple' if found.size else 'No',
+                                                 path,
                                                  '' if found.size else ' (maybe indexing is lagging)',
-                                                 path, search_url))
+                                                 search_url))
                 else:
                     raise ValueError("Missing '.../display/SPACE/TITLE' in malformed URL '{}'".format(path))
             elif 'x' in url_path.lstrip('/').split('/')[:2]:
