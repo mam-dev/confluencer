@@ -17,7 +17,7 @@ control your Confluence installation from a shell prompt, and thus automate
 (mass) content changes and reports.
 
 For example, ``cfr tidy`` applies rules to remove artifacts from a page's body
-left behind if you cut&copy contents from other sources (especially *FosWiki* pages).
+left behind if you cut&copy content from other sources (especially *FosWiki* pages).
 
 The ``confluencer.api`` Python package can be used in your own scripts to implement
 more complex custom use-cases that are not covered by the provided commands.
