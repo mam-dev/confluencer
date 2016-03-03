@@ -14,6 +14,22 @@ Welcome to the “Confluencer” manual!
 
 A CLI tool to automate common Confluence maintenance tasks and content publishing.
 
+.. image:: https://img.shields.io/pypi/v/confluencer.svg#
+   :alt: Latest Version
+   :target: https://pypi.python.org/pypi/confluencer/
+
+.. image:: https://api.travis-ci.org/1and1/confluencer.svg#
+   :alt: Travis CI
+   :target: https://travis-ci.org/1and1/confluencer
+
+.. image:: https://img.shields.io/coveralls/1and1/confluencer.svg#
+   :alt: Coveralls
+   :target: https://coveralls.io/r/1and1/confluencer
+
+.. image:: https://img.shields.io/github/issues/1and1/confluencer.svg#
+   :alt: GitHub Issues
+   :target: https://github.com/1and1/confluencer/issues
+
 
 Installing
 ----------
