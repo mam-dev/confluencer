@@ -104,7 +104,7 @@ class ConfluenceAPI(object):
             Parameters:
                 path (str): Page URL / URI in various formats (tiny, title, id).
 
-            Yields:
+            Returns:
                 str: The fully qualified API URL for the page.
 
             Raises:
