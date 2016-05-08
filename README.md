@@ -56,7 +56,7 @@ grep /.bash_completion.d/$cmdname.sh ~/.bash_completion >/dev/null \
 
 ## Usage
 
-See the [main documentation](http://confluencer.readthedocs.org/) at *Read the Docs*.
+See the [main documentation](http://confluencer.readthedocs.io/) at *Read the Docs*.
 
 
 ## Contributing
@@ -78,7 +78,7 @@ invoke build --docs test check
 ```
 
 You might also need to follow some
-[setup procedures](https://py-generic-project.readthedocs.org/en/latest/installing.html#quick-setup)
+[setup procedures](https://py-generic-project.readthedocs.io/en/latest/installing.html#quick-setup)
 to make the necessary basic commands available on *Linux*, *Mac OS X*, and *Windows*.
 
 
@@ -86,10 +86,10 @@ to make the necessary basic commands available on *Linux*, *Mac OS X*, and *Wind
 
 **Tools**
 
-* [Cookiecutter](http://cookiecutter.readthedocs.org/en/latest/)
+* [Cookiecutter](http://cookiecutter.readthedocs.io/en/latest/)
 * [PyInvoke](http://www.pyinvoke.org/)
 * [pytest](http://pytest.org/latest/contents.html)
-* [tox](https://tox.readthedocs.org/en/latest/)
+* [tox](https://tox.readthedocs.io/en/latest/)
 * [Pylint](http://docs.pylint.org/)
 * [twine](https://github.com/pypa/twine#twine)
 * [bpython](http://docs.bpython-interpreter.org/)
