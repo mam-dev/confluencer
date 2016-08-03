@@ -70,10 +70,14 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
 
 def _apply_tidy_regex_rules(body, log=None):
     """Return tidied body after applying regex rules."""
+    body = body.replace(u'\u00A0', '&nbsp;')
     for name, rule, subst in TIDY_REGEX_RULES:
+        length = len(body)
         body, count = rule.subn(subst, body)
         if count and log:
-            log.info('Replaced %d matche(s) of "%s"', count, name)
+            length -= len(body)
+            log.info('Replaced %d matche(s) of "%s" (%d chars %s)',
+                     count, name, abs(length), "added" if length < 0 else "removed")
     return body
 
 
