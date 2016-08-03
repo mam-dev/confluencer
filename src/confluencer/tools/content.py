@@ -205,8 +205,8 @@ class ConfluencePage(object):
         diff = difflib.unified_diff(
             _pretty_xml(self.body, self.markup),
             _pretty_xml(changed, self.markup),
-            'v. {0} of "{1}"'.format(self.version, self.title),
-            'v. {0} of "{1}"'.format(self.version + 1, self.title),
+            u'v. {0} of "{1}"'.format(self.version, self.title).encode('utf8'),
+            u'v. {0} of "{1}"'.format(self.version + 1, self.title).encode('utf8'),
             arrow.get(self._data.version.when).replace(microsecond=0).isoformat(sep=b' '),
             arrow.now().replace(microsecond=0).isoformat(sep=b' '),
             lineterm='', n=2)
