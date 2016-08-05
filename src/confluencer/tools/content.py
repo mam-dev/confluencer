@@ -61,6 +61,10 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
               </p>
             </ac:rich-text-body>
           </ac:structured-macro>'''),
+    ("FosWiki: Named anchors (#WikiWords)",
+     r'(<a name=[^>]+></a><a href=")http[^#]+(#[^"]+" style="[^"]+)(" title="[^"]+"><big>[^<]+</big></a>)',
+     r'\1\2; float: right;\3'),
+
     #("FosWiki: Replace HTML '<pre>' with 'code' macro",
     # r'<pre>', '<div><ac:structured-macro ac:name="code" ac:schema-version="1"><ac:plain-text-body>![CDATA['),
     #("FosWiki: Replace HTML '</pre>' with 'code' macro",
