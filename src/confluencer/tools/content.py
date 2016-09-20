@@ -39,18 +39,20 @@ CLI_CONTENT_FORMATS = dict(view='view', editor='editor', storage='storage', expo
 # Simple replacement rules, order is important!
 TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
     ("FosWiki: Remove static section numbering",
-     r'(?<=<h.>)(<a name="[^"]+?"></a>)?[0-9.]+?\s*(?=<span class="tok">&nbsp;</span>)', r'\1'),
+     r'(?<=<h.>)(<a name="[^"]+?"></a>|)[0-9.]+?\s*(?=<span class="tok">&nbsp;</span>)', r'\1'),
+    ("FosWiki: Empty anchor in headers",
+     r'(?<=<h.>)<a></a>\s* +', ''),
     ("FosWiki: 'tok' spans in front of headers",
-     r'(?<=<h.>)(<a name="[^"]+?"></a>)?\s*<span class="tok">&nbsp;</span>', r'\1'),
+     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="tok">&nbsp;</span>', r'\1'),
     ("FosWiki: Section edit icons at the end of headers",
-     r' *<a href="[^"]+"><ac:image [^>]+><ri:url ri:value="[^"]+/EditChapterPlugin/pencil.png" ?/>'
+     r'\s*<a href="[^"]+"><ac:image [^>]+><ri:url ri:value="[^"]+/EditChapterPlugin/pencil.png" ?/>'
      r'</ac:image></a>(?=</span></h)', ''),
     ("FosWiki: 'Edit Chapter Plugin' spans (old)",
-     r'(?<=<h.>)(<a name="[^"]+?"></a>)?\s*<span class="ecpHeading">([^<]+)</span>(?=</h.>)', r'\1\2'),
+     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="ecpHeading">([^<]+)</span>\s*(?=</h.>)', r'\1\2'),
     ("FosWiki: 'Edit Chapter Plugin' spans (new)",
-     r'(?<=<h.>)(<a name="[^"]+?"></a>)?\s*<span class="ecpHeading">([^<]+)<a class="ecpEdit".+?</a></span>(?=</h.>)', r'\1\2'),
+     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="ecpHeading">([^<]+)<a class="ecpEdit".+?</a></span>\s*(?=</h.>)', r'\1\2'),
     ("FosWiki: Residual leading whitespace in headers",
-     r'(?<=<h.>)(<a name="[^"]+?"></a>)?\s* +', r'\1'),
+     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s* +', r'\1'),
     ("FosWiki: Replace TOC div with macro",
      r'(<a name="foswikiTOC" ?/>)?<div class="foswikiToc">.*?</div>', '''
           <ac:structured-macro ac:name="panel" ac:schema-version="1">
@@ -79,7 +81,12 @@ def _apply_tidy_regex_rules(body, log=None):
     body = body.replace(u'\u00A0', '&nbsp;')
     for name, rule, subst in TIDY_REGEX_RULES:
         length = len(body)
-        body, count = rule.subn(subst, body)
+        try:
+            body, count = rule.subn(subst, body)
+        except re.error as cause:
+            raise click.LoggedFailure('Error "{}" in "{}" replacement: {} => {}'.format(
+                cause, name, rule.pattern, subst,
+            ))
         if count and log:
             length -= len(body)
             log.info('Replaced %d matche(s) of "%s" (%d chars %s)',
