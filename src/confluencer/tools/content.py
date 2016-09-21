@@ -38,6 +38,8 @@ CLI_CONTENT_FORMATS = dict(view='view', editor='editor', storage='storage', expo
 
 # Simple replacement rules, order is important!
 TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst in [
+    ("FosWiki: Remove CSS class from section title",
+     r'<(h[1-5]) class="[^"]*">', r'<\1>'),
     ("FosWiki: Remove static section numbering",
      r'(?<=<h.>)(<a name="[^"]+?"></a>|)[0-9.]+?\s*(?=<span class="tok">&nbsp;</span>)', r'\1'),
     ("FosWiki: Empty anchor in headers",
@@ -48,9 +50,9 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
      r'\s*<a href="[^"]+"><ac:image [^>]+><ri:url ri:value="[^"]+/EditChapterPlugin/pencil.png" ?/>'
      r'</ac:image></a>(?=</span></h)', ''),
     ("FosWiki: 'Edit Chapter Plugin' spans (old)",
-     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="ecpHeading">([^<]+)</span>\s*(?=</h.>)', r'\1\2'),
+     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="ecpHeading">\s*([^<]+)(?:<br\s*/>)</span>\s*(?=</h.>)', r'\1\2'),
     ("FosWiki: 'Edit Chapter Plugin' spans (new)",
-     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="ecpHeading">([^<]+)<a class="ecpEdit".+?</a></span>\s*(?=</h.>)', r'\1\2'),
+     r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="ecpHeading">\s*([^<]+)(?:<br\s*/>)<a class="ecpEdit".+?</a></span>\s*(?=</h.>)', r'\1\2'),
     ("FosWiki: Residual leading whitespace in headers",
      r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s* +', r'\1'),
     ("FosWiki: Replace TOC div with macro",
