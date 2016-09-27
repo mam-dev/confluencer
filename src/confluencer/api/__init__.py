@@ -51,6 +51,7 @@ def page_id_from_tiny_link(uri, _re=re.compile(r'/x/([-_A-Za-z0-9]+)')):
         tiny_url_id = matched.group(1)
         if isinstance(tiny_url_id, text_type):
             tiny_url_id = tiny_url_id.encode('ascii')
+        tiny_url_id += b'=' * (len(tiny_url_id) % 4)
         page_id_bytes = (base64.urlsafe_b64decode(tiny_url_id) + b'\0\0\0\0')[:4]
         return struct.unpack('<L', page_id_bytes)[0]
     else:
