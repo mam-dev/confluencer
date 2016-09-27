@@ -43,3 +43,36 @@ Using a Keyring Query Command
 
 Tools that can be used on Linux are ``gnome-keyring-query``
 and `gkeyring <https://github.com/kparal/gkeyring>`_.
+
+
+
+Cleaning Up Pages After Content Migration
+-----------------------------------------
+
+The *Confluence* rich text editor allows you to migrate content
+from rendered HTML content in other systems by simple copy&paste.
+However, certain artifacts of the source system are carried over,
+or active content is only copied with its *current (static) state*.
+
+The ``cfr tidy`` sub-command reliefs you from manually fixing all those tiny
+defects, based on built-in patterns and replacement rules.
+These rules currently target *FosWiki* as a source, and for example
+a copied table of contents is replaced by the related *Confluence* macro.
+
+Pass it the URL of the page you want to clean up – adding the ``--recursive``
+option includes all descendants of that page. Normally, the output
+shows which and how often rules are applied to the content, the ``--diff`` option
+adds a detailed record of the applied changes.
+
+If you want to just show the changes without applying them, use the
+``--no-save`` option (or the shorter ``-n``). This automatically includes
+diff output, to just show the applied rules repeat the option (``-nn``).
+
+.. code::
+
+    $ cfr tidy -nn "http://confluence.local/display/~jhe/Sandbox"
+    INFO:confluencer:Replaced 2 matche(s) of "FosWiki: Empty anchor in headers" (16 chars removed)
+    INFO:confluencer:Replaced 3 matche(s) of "FosWiki: 'tok' spans in front of headers" (94 chars removed)
+    INFO:confluencer:Replaced 3 matche(s) of "FosWiki: Section edit icons at the end of headers" (664 chars removed)
+    INFO:confluencer:Replaced 1 matche(s) of "FosWiki: Replace TOC div with macro" (127 chars removed)
+    INFO:confluencer:WOULD save page#2393332 "Sandbox" as v. 11
