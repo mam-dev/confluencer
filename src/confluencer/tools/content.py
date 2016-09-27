@@ -47,7 +47,7 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
     ("FosWiki: 'tok' spans in front of headers",
      r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="tok">&nbsp;</span>', r'\1'),
     ("FosWiki: Section edit icons at the end of headers",
-     r'\s*<a href="[^"]+"><ac:image [^>]+><ri:url ri:value="[^"]+/EditChapterPlugin/pencil.png" ?/>'
+     r'\s*<a(?: class="[^"]*")? href="[^"]+"(?: title="[^"]*")?><ac:image [^>]+><ri:url ri:value="[^"]+/EditChapterPlugin/pencil.png" ?/>'
      r'</ac:image></a>(?=</span></h)', ''),
     ("FosWiki: 'Edit Chapter Plugin' spans (old)",
      r'(?<=<h.>)(<a name="[^"]+?"></a>|)\s*<span class="ecpHeading">\s*([^<]+)(?:<br\s*/>)</span>\s*(?=</h.>)', r'\1\2'),
