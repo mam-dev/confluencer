@@ -86,6 +86,8 @@ def cli(ctx, quiet=False, verbose=False, config_paths=None):  # pylint: disable=
     logging.basicConfig(level=log_level)
     if ctx.obj.verbose:
         logging.getLogger("requests").setLevel(logging.DEBUG)
+    else:
+        logging.getLogger("requests").setLevel(logging.WARNING)
     ctx.obj.log = logging.getLogger(ctx.info_name)
 
 
