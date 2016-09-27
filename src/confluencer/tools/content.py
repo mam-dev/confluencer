@@ -65,6 +65,16 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
               </p>
             </ac:rich-text-body>
           </ac:structured-macro>'''),
+    ("FosWiki: Replace TOC in a Twisty with Expand+TOC macro",
+     r'<div class="twistyPlugin">.+?<big><strong>Table of Contents</strong></big></span></a></span></div>', '''
+          <ac:structured-macro ac:name="expand" ac:schema-version="1">
+            <ac:parameter ac:name="title">Table of Contents</ac:parameter>
+            <ac:rich-text-body>
+              <p>
+                <ac:structured-macro ac:name="toc" ac:schema-version="1"/>
+              </p>
+            </ac:rich-text-body>
+          </ac:structured-macro>'''),
     ("FosWiki: Named anchors (#WikiWords)",
      r'(<a name=[^>]+></a><a href=")http[^#]+(#[^"]+" style="[^"]+)(" title="[^"]+"><big>[^<]+</big></a>)',
      r'\1\2; float: right;\3'),
