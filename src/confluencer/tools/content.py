@@ -79,10 +79,11 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
      r'(<a name=[^>]+></a><a href=")http[^#]+(#[^"]+" style="[^"]+)(" title="[^"]+"><big>[^<]+</big></a>)',
      r'\1\2; float: right;\3'),
     ("FosWiki: Wrap HTML '<pre>' into 'panel' macro",
-     r'(?<!<ac:rich-text-body>)<pre>', '<ac:structured-macro ac:name="panel" ac:schema-version="1">'
-                                       '<ac:parameter ac:name="bgColor">#eeeeee</ac:parameter>'
-                                       '<ac:rich-text-body>'
-                                       '<pre>'),
+     r'(?<!<ac:rich-text-body>)(<pre(?: class="[^"]*")?>)',
+     r'<ac:structured-macro ac:name="panel" ac:schema-version="1">'
+     r'<ac:parameter ac:name="bgColor">#eeeeee</ac:parameter>'
+     r'<ac:rich-text-body>'
+     r'\1'),
     ("FosWiki: Wrap HTML '</pre>' into 'panel' macro",
      r'</pre>(?!</ac:rich-text-body>)', '</pre></ac:rich-text-body></ac:structured-macro>'),
 ])
