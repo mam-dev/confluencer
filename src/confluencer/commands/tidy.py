@@ -25,12 +25,12 @@ from ..tools import content
 
 @config.cli.command()
 @click.option('--diff', is_flag=True, default=False, help='Show differences after tidying.')
-@click.option('-n', '--no-save', '--dry-run', is_flag=True, default=False,
-              help="Only show differences after tidying, don't apply them.")
+@click.option('-n', '--no-save', '--dry-run', count=True,
+              help="Only show differences after tidying, don't apply them (use twice for no diff).")
 @click.option('-R', '--recursive', is_flag=True, default=False, help='Handle all descendants.')
 @click.argument('pages', metavar='‹page-url›…', nargs=-1)
 @click.pass_context
-def tidy(ctx, pages, diff=False, dry_run=False, recursive=False):
+def tidy(ctx, pages, diff=False, dry_run=0, recursive=False):
     """Tidy pages after cut&paste migration from other wikis."""
     with api.context() as cf:
         for page_url in pages:
@@ -45,7 +45,7 @@ def tidy(ctx, pages, diff=False, dry_run=False, recursive=False):
                 if body == page.body:
                     ctx.obj.log.info('No changes for "%s"', page.title)
                 else:
-                    if diff or dry_run:
+                    if diff or dry_run == 1:
                         page.dump_diff(body)
                     if dry_run:
                         ctx.obj.log.info('WOULD save page#{0} "{1}" as v. {2}'.format(page.page_id, page.title, page.version + 1))
