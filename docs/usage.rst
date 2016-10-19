@@ -50,11 +50,11 @@ Cleaning Up Pages After Content Migration
 -----------------------------------------
 
 The *Confluence* rich text editor allows you to migrate content
-from rendered HTML content in other systems by simple copy&paste.
+from rendered HTML in other systems by simple copy&paste.
 However, certain artifacts of the source system are carried over,
 or active content is only copied with its *current (static) state*.
 
-The ``cfr tidy`` sub-command reliefs you from manually fixing all those tiny
+The ``cfr tidy`` sub-command relieves you from manually fixing all those tiny
 defects, based on built-in patterns and replacement rules.
 These rules currently target *FosWiki* as a source, and for example
 a copied table of contents is replaced by the related *Confluence* macro.
