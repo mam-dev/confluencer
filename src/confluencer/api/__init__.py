@@ -204,7 +204,7 @@ class ConfluenceAPI(object):
         """ Walk a page tree recursively, and yield the root and all its children.
         """
         params = params.copy()
-        depth_1st = params.pop('depth_1st', False)  # TODO: implement this
+        depth_1st = params.pop('depth_1st', False)
         root_url = self.url(path)
         self.log.debug("Walking %r %s", root_url, 'depth 1st' if depth_1st else 'breadth 1st')
 
