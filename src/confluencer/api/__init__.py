@@ -24,6 +24,7 @@ import json
 import base64
 import struct
 import logging
+import collections
 from contextlib import contextmanager
 
 import requests
@@ -198,3 +199,24 @@ class ConfluenceAPI(object):
 
             path = response.get('_links', {}).get('next', None)
             params.clear()
+
+    def walk(self, path, **params):
+        """ Walk a page tree recursively, and yield the root and all its children.
+        """
+        params = params.copy()
+        depth_1st = params.pop('depth_1st', False)  # TODO: implement this
+        root_url = self.url(path)
+        self.log.debug("Walking %r %s", root_url, 'depth 1st' if depth_1st else 'breadth 1st')
+
+        stack = collections.deque([(0, [self.get(root_url, **params)])])
+        while stack:
+            depth, pages = stack.pop()
+            for page in pages:
+                ##import pprint; print('~ {:3d} {} '.format(depth, page.title).ljust(78, '~')); pprint.pprint(dict(page))
+                yield depth, page
+                children = self.getall(page._links.self + '/child/page', **params)
+                if depth_1st:
+                    for child in children:
+                        stack.append((depth+1, [child]))
+                else:
+                    stack.appendleft((depth+1, children))
