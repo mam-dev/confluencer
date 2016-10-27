@@ -105,6 +105,7 @@ to make the necessary basic commands available on *Linux*, *Mac OS X*, and *Wind
 
 * [Conflence.py](https://github.com/RaymiiOrg/confluence-python-cli) – A 1:1 mapping of the REST API to a command line tool.
 * [PythonConfluenceAPI](https://github.com/pushrodtechnology/PythonConfluenceAPI) - A Pythonic API wrapper over the Confluence REST API.
+* [pyconfluence](https://github.com/FulcrumIT/pyconfluence) – PyConfluence is designed for automated documentation, with convenience in mind and easy interaction with the numerous services Confluence offers.
 * [rst2confluence](https://github.com/netresearch/rst2confluence) – Convert reStructuredText to Confluence style wiki markup.
 
 
