@@ -191,7 +191,7 @@ class ConfluencePage(object):
         assert self.markup == 'storage', "Can only clean up pages in storage format!"
         return _apply_tidy_regex_rules(self.body, log=log)
 
-    def update(self, body=None):
+    def update(self, body=None, minor=True):
         """Update a page's content."""
         assert self.markup == 'storage', "Cannot update non-storage page markup!"
         if body is None:
@@ -204,7 +204,7 @@ class ConfluencePage(object):
             'type': 'page',
             'space': {'key': self.space_key},
             'title': self.title,
-            'version': {'number': self.version + 1},
+            'version': dict(number=self.version + 1, minorEdit=minor),
             'body': {
                 'storage': {
                     'value': body,
