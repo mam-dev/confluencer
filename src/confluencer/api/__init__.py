@@ -83,7 +83,7 @@ class ConfluenceAPI(object):
         convenience layer above plain ``requests`` HTTP calls.
     """
 
-    def __init__(self, endpoint=None):
+    def __init__(self, endpoint=None, session=None):
         self.log = logging.getLogger('cfapi')
         self.base_url = endpoint or os.environ.get('CONFLUENCE_BASE_URL')
         assert self.base_url, "You MUST set the CONFLUENCE_BASE_URL environment variable!"
@@ -97,7 +97,7 @@ class ConfluenceAPI(object):
                 import httplib as http_client  # pylint: disable=import-error
             http_client.HTTPConnection.debuglevel = 1
 
-        self.session = requests.Session()
+        self.session = session or requests.Session()
         self.session.headers['User-Agent'] = 'Confluencer/{} [{}]'.format(version, requests.utils.default_user_agent())
 
     def url(self, path):
