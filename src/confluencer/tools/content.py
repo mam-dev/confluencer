@@ -86,6 +86,8 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
      r'\1'),
     ("FosWiki: Wrap HTML '</pre>' into 'panel' macro",
      r'</pre>(?!</ac:rich-text-body>)', '</pre></ac:rich-text-body></ac:structured-macro>'),
+    ("FosWiki: Embedded CSS - custom list indent",
+     r'<ul style="margin-left: [.0-9]+em;">', '<ul>'),
 ])
 
 
