@@ -90,6 +90,8 @@ TIDY_REGEX_RULES = ((_name, re.compile(_rule), _subst) for _name, _rule, _subst 
      r'<ul style="margin-left: [.0-9]+em;">', '<ul>'),
     ("FosWiki: Empty paragraphs",
      r'<p>&nbsp;</p>', r''),
+    ("FosWiki: Obsolete CSS classes",
+     r'(<(?:div|p|span|h[1-5])) class="(foswikiTopic)"', r'\1'),
 ])
 
 
