@@ -11,7 +11,7 @@ configobj>=5.0,<6
 rudiments>=0.2.1
 #-e git+https://github.com/jhermann/rudiments#egg=rudiments
 
-requests==2.9.1
+requests==2.13.0
 pyOpenSSL>=0.15 ; python_version < '2.7.9'
 pyasn1>=0.1.9 ; python_version < '2.7.9'
 ndg-httpsclient>=0.4 ; python_version < '2.7.9'
