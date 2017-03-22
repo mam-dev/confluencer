@@ -21,3 +21,4 @@ from __future__ import absolute_import, unicode_literals, print_function
 from . import help  # noqa pylint: disable=redefined-builtin
 from . import tidy
 from . import pretty
+from . import stats
