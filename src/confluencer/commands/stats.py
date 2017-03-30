@@ -17,10 +17,15 @@
 # limitations under the License.
 from __future__ import absolute_import, unicode_literals, print_function
 
+import sys
+from pprint import pformat
+
+from bunch import Bunch
 from rudiments.reamed import click
 
 from .. import config, api
 from ..tools import content
+from .._compat import text_type, string_types
 
 
 SERIALIZERS_NEED_NL = ('dict', 'json', 'html')
@@ -28,27 +33,81 @@ SERIALIZERS_TEXT = SERIALIZERS_NEED_NL + ('yaml', 'csv', 'tsv')
 SERIALIZERS_BINARY = ('ods', 'xls')  # this just doesn't work right (Unicode issues): , 'xlsx')
 SERIALIZERS = SERIALIZERS_TEXT + SERIALIZERS_BINARY
 
+ENTITIES = ('macro',)  # 'label', 'page', 'title', 'attachment', 'blog', …
+
+
+def print_result(ctx, obj):
+    """ Dump a result to the console or an output file."""
+    text = obj
+    if isinstance(text, dict):
+        if isinstance(text, Bunch):
+            # Debunchify for ``pformat``
+            text = dict(text.copy())
+            for key, val in text.items():
+                if isinstance(val, Bunch):
+                    text[key] = dict(val)
+        text = pformat(text)
+
+    if not isinstance(text, string_types):
+        text = repr(text)
+    if ctx.obj.serializer in SERIALIZERS_NEED_NL:
+        text += '\n'
+    if isinstance(text, text_type):
+        text = text.encode('utf-8')
+    try:
+        (ctx.obj.outfile or sys.stdout).write(text)
+    except EnvironmentError as cause:
+        raise click.LoggedFailure('Error while writing "{}" ({})'
+                                  .format(outname or '<stream>', cause))
+
 
 @config.cli.group()
 @click.option('-f', '--format', 'serializer', default=None, type=click.Choice(SERIALIZERS),
     help="Output format (defaults to extension of OUTFILE).",
 )
+@click.option('-s', '--space', multiple=True)
+@click.option('-e', '--entity', default=None, type=click.Choice(ENTITIES),
+    help="Entity to handle / search for.",
+)
 @click.option('-o', '--outfile', default=None, type=click.File('wb'))
 @click.pass_context
-def stats(ctx, outfile, serializer):
+def stats(ctx, space, entity, outfile, serializer):
     """Create status reports (or data exports)."""
+    ctx.obj.spaces = space
+    ctx.obj.entity = entity
     ctx.obj.outfile = outfile
     ctx.obj.serializer = serializer
+
+    ctx.obj.cql = []
+    if ctx.obj.spaces:
+        ctx.obj.cql.append('({})'.format(
+            ' OR '.join(['space="{}"'.format(x) for x in ctx.obj.spaces]),
+        ))
 
 
 @stats.command()
 @click.option('--top', metavar='N', default=0, type=int,
               help="Show top ‹N› ranked entities.")
+@click.argument('query')
 @click.pass_context
-def usage(ctx, top=0):
+def usage(ctx, query, top=0):
     """Create report on usage of different entities (macros, labels, …)."""
+    if not ctx.obj.entity:
+        click.serror("No --entity selected!")
+        return
     if top:
         click.echo("TOP {:d}".format(top))
-    else:
-        click.echo(ctx.get_help()) ##, color=ctx.color)
-        ctx.exit()
+
+    outname = getattr(ctx.obj.outfile, 'name', None)
+
+    with api.context() as cf:
+        ctx.obj.cql.append('type=page AND macro != "{}"'.format(query))
+        try:
+            response = cf.get("content/search", cql=' AND '.join(ctx.obj.cql))
+        except api.ERRORS as cause:
+            # Just log and otherwise ignore any errors
+            click.serror("API ERROR: {}", cause)
+        else:
+            print('Got {} results.'.format(len(response.results)))
+            if response.results:
+                print_result(ctx, response.results[0])
