@@ -35,7 +35,7 @@ To get a bleeding-edge version from source, use these commands:
 ```sh
 repo="1and1/confluencer"
 pip install -r "https://raw.githubusercontent.com/$repo/master/requirements.txt"
-pip install -UI -e "git+https://github.com/$repo.git#egg=${repo#*/}"
+pip install -U -e "git+https://github.com/$repo.git#egg=${repo#*/}"
 ```
 
 See [Contributing](#contributing) on how to create a full development environment.
