@@ -57,8 +57,8 @@ def print_result(ctx, obj):
     try:
         (ctx.obj.outfile or sys.stdout).write(text)
     except EnvironmentError as cause:
-        raise click.LoggedFailure('Error while writing "{}" ({})'
-                                  .format(outname or '<stream>', cause))
+        raise click.LoggedFailure('Error while writing "{}" ({})'.format(
+            getattr(ctx.obj.outfile or object(), 'name', '<stream>'), cause))
 
 
 @config.cli.group()
