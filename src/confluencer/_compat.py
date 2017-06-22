@@ -87,7 +87,7 @@ if not PY2:
 else:
     unichr = unichr
     text_type = unicode
-    range_type = xrange  # pylint: disable=redefined-variable-type
+    range_type = xrange
     string_types = (str, unicode)
     integer_types = (int, long)
 
