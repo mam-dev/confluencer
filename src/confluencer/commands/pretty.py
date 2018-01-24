@@ -41,7 +41,7 @@ def pretty(ctx, pages, markup, recursive=False):
                 page = content.ConfluencePage(cf, page_url, markup=content_format)
             except api.ERRORS as cause:
                 # Just log and otherwise ignore any errors
-                click.serror("API ERROR: {}", cause)
+                api.diagnostics(cause)
             else:
                 root = page.etree()
                 root.getroottree().write(sys.stdout, encoding='utf8', pretty_print=True, xml_declaration=False)

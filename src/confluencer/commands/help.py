@@ -59,7 +59,7 @@ def help_command(ctx, config_dump=False):
             spaces = list(cf.getall('space'))
         except api.ERRORS as cause:
             # Just log and otherwise ignore any errors
-            click.serror("API ERROR: {}", cause)
+            api.diagnostics(cause)
         else:
             click.echo(u'{} spaces found.'.format(len(spaces)))
             click.echo(u'\nMost recently created:')

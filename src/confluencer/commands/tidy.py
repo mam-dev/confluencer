@@ -38,7 +38,7 @@ def tidy(ctx, pages, diff=False, dry_run=0, recursive=False):
                 page = content.ConfluencePage(cf, page_url)
             except api.ERRORS as cause:
                 # Just log and otherwise ignore any errors
-                click.serror("API ERROR: {}", cause)
+                api.diagnostics(cause)
             else:
                 ##print(page._data); xxx
                 body = page.tidy(log=ctx.obj.log)

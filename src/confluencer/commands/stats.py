@@ -106,7 +106,7 @@ def usage(ctx, query, top=0):
             response = cf.get("content/search", cql=' AND '.join(ctx.obj.cql))
         except api.ERRORS as cause:
             # Just log and otherwise ignore any errors
-            click.serror("API ERROR: {}", cause)
+            api.diagnostics(cause)
         else:
             print('Got {} results.'.format(len(response.results)))
             if response.results:

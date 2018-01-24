@@ -39,6 +39,7 @@ from .._compat import text_type, urlparse, urlunparse, parse_qs, urlencode, unqu
 ERRORS = (
     requests.RequestException,
 )
+MAX_ERROR_LINES = 15
 
 
 def page_id_from_tiny_link(uri, _re=re.compile(r'/x/([-_A-Za-z0-9]+)')):
@@ -62,6 +63,37 @@ def page_id_from_tiny_link(uri, _re=re.compile(r'/x/([-_A-Za-z0-9]+)')):
 def tiny_id(page_id):
     """Return *tiny link* ID for the given page ID."""
     return base64.urlsafe_b64encode(struct.pack('<L', int(page_id)).rstrip(b'\0')).rstrip(b'=').decode('ascii')
+
+
+def diagnostics(cause):
+    """Display diagnostic info based on the given cause."""
+    import pprint
+
+    if not cause:
+        return
+
+    response = getattr(cause, 'response', None)
+    request = getattr(response, 'request', None)
+    # pprint.pprint(vars(response))
+    # pprint.pprint(vars(request))
+
+    method = 'HTTP {}'.format(request.method) if request else 'HTTP'
+    try:
+        data = pprint.pformat(response.json(), indent=4)
+    except (AttributeError, TypeError, ValueError):
+        try:
+            data = response.content
+        except AttributeError:
+            data = ''
+    if data:
+        data = data.splitlines()
+        if len(data) > MAX_ERROR_LINES:
+            data = data[:MAX_ERROR_LINES] + ['...']
+        data = '| RESPONSE BODY:\n' + '\n'.join(['|   ' + x for x in data])
+
+    click.serror("{} ERROR: {}".format(method, cause))
+    if data:
+        click.secho(data)
 
 
 @contextmanager
