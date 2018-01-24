@@ -1,5 +1,5 @@
-confluencer.api package
-=======================
+confluencer\.api package
+========================
 
 .. automodule:: confluencer.api
     :members:

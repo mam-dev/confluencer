@@ -1,5 +1,5 @@
-confluencer.commands package
-============================
+confluencer\.commands package
+=============================
 
 .. automodule:: confluencer.commands
     :members:
@@ -9,24 +9,32 @@ confluencer.commands package
 Submodules
 ----------
 
-confluencer.commands.help module
---------------------------------
+confluencer\.commands\.help module
+----------------------------------
 
 .. automodule:: confluencer.commands.help
     :members:
     :undoc-members:
     :show-inheritance:
 
-confluencer.commands.pretty module
-----------------------------------
+confluencer\.commands\.pretty module
+------------------------------------
 
 .. automodule:: confluencer.commands.pretty
     :members:
     :undoc-members:
     :show-inheritance:
 
-confluencer.commands.tidy module
---------------------------------
+confluencer\.commands\.stats module
+-----------------------------------
+
+.. automodule:: confluencer.commands.stats
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+confluencer\.commands\.tidy module
+----------------------------------
 
 .. automodule:: confluencer.commands.tidy
     :members:

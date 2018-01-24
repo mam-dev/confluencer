@@ -1,5 +1,5 @@
-confluencer.util package
-========================
+confluencer\.util package
+=========================
 
 .. automodule:: confluencer.util
     :members:
