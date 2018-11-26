@@ -241,7 +241,11 @@ class ConfluenceAPI(object):
         pos, outer_limit = 0, params.pop('limit', sys.maxsize)
         while path:
             response = self.get(path, **params)
-            for item in response.get('results', []):
+            #import pprint; print('\nGETALL RESPONSE'); pprint.pprint(response); print('')
+            if 'page' in params.get('expand', '').split(','):
+                response = response['page']
+            items = response.get('results', [])
+            for item in items:
                 pos += 1
                 if pos > outer_limit:
                     return
