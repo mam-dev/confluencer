@@ -13,12 +13,12 @@ sphinx-rtd-theme==0.2.4
 docutils<0.13.1
 
 pylint==1.7.1
-bpython==0.16
+bpython==0.17.1
 yolk3k==0.9
 pip-upgrader==1.4.1
 
 tox==2.7.0
-twine==1.9.1
+twine==1.12.1
 
 -r test-requirements.txt
 -r requirements.txt
