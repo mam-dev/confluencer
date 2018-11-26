@@ -1,6 +1,6 @@
 # *- coding: utf-8 -*-
 # pylint: disable=wildcard-import, unused-wildcard-import, missing-docstring
-# pylint: disable=redefined-outer-name, no-self-use, bad-continuation
+# pylint: disable=redefined-outer-name, no-self-use, bad-continuation, unused-import
 """ Test '__main__' CLI stub.
 
     See http://click.pocoo.org/3/testing/
