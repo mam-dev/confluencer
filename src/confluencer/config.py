@@ -20,6 +20,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 import os
 import re
 import sys
+import shutil
 
 from rudiments.reamed.click import Configuration  # noqa pylint: disable=unused-import
 
@@ -69,3 +70,27 @@ def envvar(name, default=None):
     """Return an environment variable specific for this application (using a prefix)."""
     varname = (APP_NAME + '-' + name).upper().replace('-', '_')
     return os.environ.get(varname, default)
+
+
+def cache_file(name):
+    """Return absolute path to any app-specific caching file."""
+    import appdirs
+
+    conf_dir = appdirs.user_cache_dir() or os.path.expanduser('~/.cache')
+    if APP_NAME:
+        conf_dir = os.path.join(conf_dir, APP_NAME)
+    if not os.path.exists(conf_dir):
+        os.makedirs(conf_dir)
+
+    return os.path.join(conf_dir, name)
+
+
+def cache_empty_dir(name):
+    """Return absolute path to a clean staging directory."""
+    path = cache_file(name)
+
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+
+    return path
