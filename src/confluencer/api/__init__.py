@@ -340,6 +340,19 @@ class ConfluenceAPI(object):
         response = self.session.delete(url, json=data)
         response.raise_for_status()
 
+    def user(self, username=None, key=None):
+        """ Return user details.
+
+            Passing neither user name nor key retrieves the current user.
+        """
+        if key:
+            user = self.get('user', key=key, _cached=True)
+        elif username:
+            user = self.get('user', username=username, _cached=True)
+        else:
+            user = self.get('user/current')
+        return user
+
     def walk(self, path, **params):
         """ Walk a page tree recursively, and yield the root and all its children.
         """

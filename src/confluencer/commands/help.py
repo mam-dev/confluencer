@@ -56,11 +56,13 @@ def help_command(ctx, config_dump=False):
     banner('Confluence Stats')
     with api.context() as cf:
         try:
+            user = cf.user()
             spaces = list(cf.getall('space'))
         except api.ERRORS as cause:
             # Just log and otherwise ignore any errors
             api.diagnostics(cause)
         else:
+            click.echo(u'Confluence API accessed as {u.displayName} [{u.username}].'.format(u=user))
             click.echo(u'{} spaces found.'.format(len(spaces)))
             click.echo(u'\nMost recently created:')
             for space in itertools.islice(sorted(spaces, key=lambda i: i.id, reverse=True), 5):
