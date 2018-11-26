@@ -1,5 +1,5 @@
-confluencer\.tools package
-==========================
+confluencer.tools package
+=========================
 
 .. automodule:: confluencer.tools
     :members:
@@ -9,8 +9,8 @@ confluencer\.tools package
 Submodules
 ----------
 
-confluencer\.tools\.content module
-----------------------------------
+confluencer.tools.content module
+--------------------------------
 
 .. automodule:: confluencer.tools.content
     :members:

@@ -19,8 +19,8 @@ Subpackages
 Submodules
 ----------
 
-confluencer\.config module
---------------------------
+confluencer.config module
+-------------------------
 
 .. automodule:: confluencer.config
     :members:
