@@ -254,6 +254,92 @@ class ConfluenceAPI(object):
             path = response.get('_links', {}).get('next', None)
             params.clear()
 
+    def add_page(self, space_key, title, body, parent_id=None, labels=None):
+        """ Create a new page.
+
+            The body must be in 'storage' representation.
+        """
+        data = {
+            "type": "page",
+            "title": title,
+            "space": {
+                "key": space_key,
+            },
+            "body": {
+                "storage": {
+                    "value": body,
+                    "representation": "storage",
+                }
+            }
+        }
+        if parent_id:
+            data.update(dict(ancestors=[dict(type='page', id=parent_id)]))
+
+        url = self.url('/content')
+        self.log.debug("POST (add page) to %r", url)
+        response = self.session.post(url, json=data)
+        response.raise_for_status()
+        page = AttrDict(response.json())
+        self.log.debug("Create '%s': %r", title, response)
+
+        # Add any provided labels
+        if labels:
+            data = [dict(prefix='global', name=label) for label in labels]
+            response = self.session.post(page._links.self + '/label', json=data)
+            response.raise_for_status()
+            self.log.debug("Labels for #'%s': %r %r",
+                           page.id, response, [i['name'] for i in response.json()['results']])
+
+        return page
+
+    def update_page(self, page, body, minor_edit=True):
+        """ Update an existing page.
+
+            The page **MUST** have been retrieved using ``expand='body.storage,version,ancestors'``.
+        """
+        if page.body.storage.value == body:
+            self.log.debug("Update: Unchanged page '%s', doing nothing", page.title)
+        else:
+            data = {
+                "id": page.id,
+                "type": page.type,
+                "title": page.title,
+                "space": {
+                    "key": page._expandable.space.split('/')[-1],
+                },
+                "body": {
+                    "storage": {
+                        "value": body,
+                        "representation": "storage",
+                    }
+                },
+                "version": {"number": page.version.number + 1, "minorEdit": minor_edit},
+                "ancestors": [{'type': page.ancestors[-1].type, 'id': page.ancestors[-1].id}],
+            }
+
+            url = self.url('/content/{}'.format(page.id))
+            self.log.debug("PUT (update page) to %r", url)
+            #import pprint; print('\nPAGE UPDATE'); pprint.pprint(data); print('')
+            response = self.session.put(url, json=data)
+            response.raise_for_status()
+            page = AttrDict(response.json())
+            self.log.debug("Create '%s': %r", page.title, response)
+
+        return page
+
+    def delete_page(self, page, status=None):
+        """ Delete an existing page.
+
+            To permanently purge trashed content, pass ``status='trashed'``.
+        """
+        url = self.url('/content/{}'.format(page.id))
+        self.log.debug("DELETE %r (status=%r)", url, status)
+        data = {}
+        if status:
+            data['status'] = status
+        response = self.session.delete(url, json=data)
+        response.raise_for_status()
+
     def walk(self, path, **params):
         """ Walk a page tree recursively, and yield the root and all its children.
         """
