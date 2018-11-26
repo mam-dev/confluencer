@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=bad-continuation
+# pylint: disable=bad-continuation, protected-access
 """ Confluence API support.
+
+    https://developer.atlassian.com/cloud/confluence/rest/
 """
-# Copyright ©  2015 1&1 Group <git@1and1.com>
+# Copyright ©  2015-2018 1&1 Group <git@1and1.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,9 +30,11 @@ import collections
 from contextlib import contextmanager
 
 import requests
-from bunch import bunchify
+import requests_cache
+from addict import Dict as AttrDict
 from rudiments.reamed import click
 
+from .. import config
 from .. import __version__ as version
 from .._compat import text_type, urlparse, urlunparse, parse_qs, urlencode, unquote_plus
 
@@ -115,6 +119,9 @@ class ConfluenceAPI(object):
         convenience layer above plain ``requests`` HTTP calls.
     """
 
+    CACHE_EXPIRATION = 10 * 60 * 60  # seconds
+    UA_NAME = 'Confluencer'
+
     def __init__(self, endpoint=None, session=None):
         self.log = logging.getLogger('cfapi')
         self.base_url = endpoint or os.environ.get('CONFLUENCE_BASE_URL')
@@ -130,7 +137,13 @@ class ConfluenceAPI(object):
             http_client.HTTPConnection.debuglevel = 1
 
         self.session = session or requests.Session()
-        self.session.headers['User-Agent'] = 'Confluencer/{} [{}]'.format(version, requests.utils.default_user_agent())
+        self.session.headers['User-Agent'] = '{}/{} [{}]'.format(
+            self.UA_NAME, version, requests.utils.default_user_agent())
+
+        self.cached_session = requests_cache.CachedSession(
+            cache_name=config.cache_file(type(self).__name__),
+            expire_after=self.CACHE_EXPIRATION)
+        self.cached_session.headers['User-Agent'] = self.session.headers['User-Agent']
 
     def url(self, path):
         """ Build an API URL from partial paths.
@@ -203,12 +216,17 @@ class ConfluenceAPI(object):
         return url
 
     def get(self, path, **params):
-        """GET an API path and return bunchified result."""
+        """ GET an API path and return result.
+
+            If ``_cached=True`` is provided, the cached session is used.
+        """
+        params = params.copy()
+        cached = params.pop('_cached', False)
         url = self.url(path)
         self.log.debug("GET from %r", url)
-        response = self.session.get(url, params=params)
+        response = (self.cached_session if cached else self.session).get(url, params=params)
         response.raise_for_status()
-        return bunchify(response.json())
+        return AttrDict(response.json())
 
     def getall(self, path, **params):
         """ Yield all results of a paginated GET.
