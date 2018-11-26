@@ -41,6 +41,7 @@ VERSION_INFO = '%(prog)s %(version)s from {} [Python {}]'.format(CLI_PATH, ' '.j
 # These will be filled by `__main__`
 APP_NAME = None
 cli = None  # pylint: disable=invalid-name
+cfg = None  # pylint: disable=invalid-name
 
 
 def version_info(ctx=None):

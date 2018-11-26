@@ -74,7 +74,7 @@ def license_option(*param_decls, **attrs):
 @click.pass_context
 def cli(ctx, quiet=False, verbose=False, config_paths=None):  # pylint: disable=unused-argument
     """'confluencer' command line tool."""
-    config.Configuration.from_context(ctx, config_paths)
+    config.cfg = config.Configuration.from_context(ctx, config_paths)
     ctx.obj.quiet = quiet
     ctx.obj.verbose = verbose
 
