@@ -15,7 +15,7 @@ docutils<0.13.1
 pylint==1.7.1
 bpython==0.17.1
 yolk3k==0.9
-pip-upgrader==1.4.1
+pip-upgrader==1.4.6
 
 tox==3.5.3
 twine==1.12.1
