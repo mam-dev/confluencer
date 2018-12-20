@@ -11,7 +11,7 @@ Sphinx==1.8.2
 sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.2.4
 
-pylint==1.7.1
+pylint==2.2.2
 bpython==0.17.1
 yolk3k==0.9
 pip-upgrader==1.4.6

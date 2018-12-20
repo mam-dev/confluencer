@@ -26,13 +26,13 @@ from .. import config, api
 from ..tools import content
 
 
-@config.cli.group()
+@config.cli.group(name='rm')
 @click.pass_context
-def rm(ctx):
+def remove(ctx):
     """Remove contents."""
 
 
-@rm.command()
+@remove.command()
 @click.argument('pages', metavar='‹page-url›…', nargs=-1)
 @click.pass_context
 def tree(ctx, pages):
@@ -45,6 +45,4 @@ def tree(ctx, pages):
             # Just log and otherwise ignore any errors
             api.diagnostics(cause)
         else:
-            print('Got {} results.'.format(len(response.results)))
-            if response.results:
-                print_result(ctx, response.results[0])
+            pass

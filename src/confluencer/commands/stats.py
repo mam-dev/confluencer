@@ -24,7 +24,6 @@ from munch import Munch as Bunch
 from rudiments.reamed import click
 
 from .. import config, api
-from ..tools import content
 from .._compat import text_type, string_types
 
 

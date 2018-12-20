@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=bad-continuation, protected-access
+# pylint: disable=bad-continuation, protected-access, no-else-return
 """ Confluence API support.
 
     https://developer.atlassian.com/cloud/confluence/rest/
