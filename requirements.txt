@@ -5,7 +5,7 @@
 click>=3.3,<4
 colorama
 
-bunch==1.0.1
+munch==2.3.2
 addict==2.2.0
 configobj>=5.0,<6
 #-e git+https://github.com/jhermann/configobj@move-to-package-32#egg=configobj

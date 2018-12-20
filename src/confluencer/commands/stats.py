@@ -20,7 +20,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 import sys
 from pprint import pformat
 
-from bunch import Bunch
+from munch import Munch as Bunch
 from rudiments.reamed import click
 
 from .. import config, api

@@ -26,7 +26,7 @@ except ImportError:  # Python 2
 from xml.sax.saxutils import quoteattr  # pylint: disable=wrong-import-order
 
 import arrow
-from bunch import bunchify
+from munch import munchify as bunchify
 from lxml.etree import fromstring, HTMLParser, XMLParser, XMLSyntaxError  # pylint: disable=no-name-in-module
 from rudiments.reamed import click
 

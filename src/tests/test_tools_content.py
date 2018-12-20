@@ -18,7 +18,7 @@
 # limitations under the License.
 from __future__ import absolute_import, unicode_literals, print_function
 
-from bunch import Bunch
+from munch import Munch as Bunch
 
 from confluencer.tools import content
 

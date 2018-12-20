@@ -21,7 +21,7 @@ import re
 import logging
 
 import click
-from bunch import Bunch
+from munch import Munch as Bunch
 
 from . import config
 
