@@ -13,7 +13,7 @@ rudiments>=0.2.1
 #-e git+https://github.com/jhermann/rudiments#egg=rudiments
 
 appdirs==1.4.3
-requests==2.20.1
+requests==2.21.0
 requests-cache==0.4.13
 pyOpenSSL>=0.15 ; python_version < '2.7.9'
 pyasn1>=0.1.9 ; python_version < '2.7.9'

@@ -16,7 +16,7 @@ bpython==0.17.1
 yolk3k==0.9
 pip-upgrader==1.4.6
 
-tox==3.5.3
+tox==3.6.0
 twine==1.12.1
 
 -r test-requirements.txt
