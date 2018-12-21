@@ -23,6 +23,7 @@ from munch import Munch as Bunch
 from rudiments.reamed import click
 
 from .. import config, api
+from ..util import progress, CLEARLINE
 from ..tools import content
 
 
@@ -33,16 +34,43 @@ def remove(ctx):
 
 
 @remove.command()
+## TODO: -n, --no-act, --dry-run, --simulate
+## TODO: --with[out]-root (or tree vs children command?)
+## TODO: include / exclude filters (title glob)
 @click.argument('pages', metavar='‹page-url›…', nargs=-1)
 @click.pass_context
 def tree(ctx, pages):
     """Remove page(s) including their descendants."""
-    # TODO: implement me
     with api.context() as cf:
-        try:
-            response = None
-        except api.ERRORS as cause:
-            # Just log and otherwise ignore any errors
-            api.diagnostics(cause)
-        else:
-            pass
+        for page_ref in pages:
+            root_page = cf.get(page_ref)
+            root_children = cf.get(root_page._expandable.children, expand='page', limit=200)
+
+            # Get confirmation
+            answer = None
+            while answer not in {'yes', 'no', 'n'}:
+                answer = input('REALLY remove {} children of »{}« and all their descendants? [yes|No|N] '
+                               .format(len(root_children.page.results), root_page.title))
+                answer = answer.lower() or 'n'
+
+            # Delete data on positive confirmation
+            if answer != 'yes':
+                click.echo('No confirmation, did not delete anything!')
+            else:
+                counter = 0
+                try:
+                    iter_pages = progress(sorted(root_children.page.results, key=lambda x: x.title.lower()))
+                    for page in iter_pages:
+                        print(CLEARLINE + "DEL", page.title, end='\r')
+                        iter_pages.set_postfix_str('')
+                        while True:
+                            children = cf.get(page._expandable.children, expand='page', limit=200).page.results
+                            if not children:
+                                break
+                            for child in children:
+                                cf.delete_page(child)
+                                counter += 1
+                        cf.delete_page(page)
+                        counter += 1
+                finally:
+                    print(CLEARLINE + "Deleted {} pages.\n".format(counter))

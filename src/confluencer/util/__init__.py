@@ -16,3 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import absolute_import, unicode_literals, print_function
+
+from tqdm import tqdm
+
+
+CLEARLINE = "\r\033[2K"
+
+
+def progress(*args, **kwargs):
+    """Wrapper for progress bars providing consistent customizaion."""
+    kwargs.setdefault('dynamic_ncols', True)
+    kwargs.setdefault('position', 1)
+    return tqdm(*args, **kwargs)
