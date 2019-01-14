@@ -9,8 +9,8 @@ munch==2.3.2
 addict==2.2.0
 configobj>=5.0,<6
 #-e git+https://github.com/jhermann/configobj@move-to-package-32#egg=configobj
-rudiments>=0.2.1
-#-e git+https://github.com/jhermann/rudiments#egg=rudiments
+#rudiments>=0.2.1
+-e git+https://github.com/jhermann/rudiments#egg=rudiments
 
 appdirs==1.4.3
 requests==2.21.0
