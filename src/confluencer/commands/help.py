@@ -62,7 +62,8 @@ def help_command(ctx, config_dump=False):
             # Just log and otherwise ignore any errors
             api.diagnostics(cause)
         else:
-            click.echo(u'Confluence API accessed as {u.displayName} [{u.username}].'.format(u=user))
+            click.echo(u'Confluence API [{u._info.server} / {u._info.sen}]'
+                       u' accessed as {u.displayName} [{u.username}].'.format(u=user))
             click.echo(u'{} spaces found.'.format(len(spaces)))
             click.echo(u'\nMost recently created:')
             for space in itertools.islice(sorted(spaces, key=lambda i: i.id, reverse=True), 5):

@@ -226,7 +226,10 @@ class ConfluenceAPI(object):
         self.log.debug("GET from %r", url)
         response = (self.cached_session if cached else self.session).get(url, params=params)
         response.raise_for_status()
-        return AttrDict(response.json())
+        result = AttrDict(response.json())
+        result._info.server = response.headers.get('Server', '')
+        result._info.sen = response.headers.get('X-ASEN', '')
+        return result
 
     def getall(self, path, **params):
         """ Yield all results of a paginated GET.
