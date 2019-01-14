@@ -30,6 +30,8 @@ Using the ~/.netrc File
 
  2. Call ``chmod 600 ~/.netrc`` to protect your sensitive data.
 
+ 3. Check that everything is OK by calling ``python3 -m netrc | less``.
+
 This way, the sensitive authentication information is separate from the
 rest of the configuration. Use the ``cfr help`` command to check whether
 your credentials actually work – if they do, the “Confluence Stats”
