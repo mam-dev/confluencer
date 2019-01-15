@@ -25,6 +25,14 @@ confluencer.commands.pretty module
     :undoc-members:
     :show-inheritance:
 
+confluencer.commands.remove module
+----------------------------------
+
+.. automodule:: confluencer.commands.remove
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 confluencer.commands.stats module
 ---------------------------------
 
