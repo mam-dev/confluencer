@@ -17,6 +17,7 @@
 # limitations under the License.
 from __future__ import absolute_import, unicode_literals, print_function
 
+import os
 import sys
 
 from rudiments.reamed import click
@@ -44,4 +45,5 @@ def pretty(ctx, pages, markup, recursive=False):
                 api.diagnostics(cause)
             else:
                 root = page.etree()
-                root.getroottree().write(sys.stdout, encoding='utf8', pretty_print=True, xml_declaration=False)
+                with os.fdopen(sys.stdout.fileno(), "wb", closefd=False) as stdout:
+                    root.getroottree().write(stdout, encoding='utf8', pretty_print=True, xml_declaration=False)
