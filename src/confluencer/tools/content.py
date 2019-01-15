@@ -30,7 +30,7 @@ from munch import munchify as bunchify
 from lxml.etree import fromstring, HTMLParser, XMLParser, XMLSyntaxError  # pylint: disable=no-name-in-module
 from rudiments.reamed import click
 
-from .._compat import StringIO
+from .._compat import BytesIO
 
 
 # Mapping of CLI content format names to Confluence API names
@@ -143,9 +143,9 @@ def _make_etree(body, content_format='storage', attrs=None):
 def _pretty_xml(body, content_format='storage', attrs=None):
     """Pretty-print the given page body and return a list of lines."""
     root = _make_etree(body, content_format=content_format, attrs=attrs)
-    prettyfied = StringIO()
+    prettyfied = BytesIO()
     root.getroottree().write(prettyfied, encoding='utf8', pretty_print=True, xml_declaration=False)
-    return prettyfied.getvalue().splitlines()
+    return prettyfied.getvalue().decode('utf8').splitlines()
 
 
 class ConfluencePage(object):
@@ -240,10 +240,10 @@ class ConfluencePage(object):
         diff = difflib.unified_diff(
             _pretty_xml(self.body, self.markup),
             _pretty_xml(changed, self.markup),
-            u'v. {0} of "{1}"'.format(self.version, self.title).encode('utf8'),
-            u'v. {0} of "{1}"'.format(self.version + 1, self.title).encode('utf8'),
-            arrow.get(self._data.version.when).replace(microsecond=0).isoformat(sep=b' '),
-            arrow.now().replace(microsecond=0).isoformat(sep=b' '),
+            u'v. {0} of "{1}"'.format(self.version, self.title),
+            u'v. {0} of "{1}"'.format(self.version + 1, self.title),
+            arrow.get(self._data.version.when).replace(microsecond=0).isoformat(sep=' '),
+            arrow.now().replace(microsecond=0).isoformat(sep=' '),
             lineterm='', n=2)
         for line in diff:
             click.secho(line, fg=self.DIFF_COLS.get(line and line[0], None))
