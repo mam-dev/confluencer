@@ -5,20 +5,20 @@
 click>=3.3,<4
 colorama
 
-munch==2.3.2
-addict==2.2.0
+munch==2.5.0
+addict==2.2.1
 configobj>=5.0,<6
 #-e git+https://github.com/jhermann/configobj@move-to-package-32#egg=configobj
 #rudiments>=0.2.1
 -e git+https://github.com/jhermann/rudiments#egg=rudiments
 
 appdirs==1.4.3
-requests==2.21.0
-requests-cache==0.4.13
+requests==2.22.0
+requests-cache==0.5.2
 pyOpenSSL>=0.15 ; python_version < '2.7.9'
 pyasn1>=0.1.9 ; python_version < '2.7.9'
 ndg-httpsclient>=0.4 ; python_version < '2.7.9'
 
-lxml==4.2.5
-arrow==0.12.1
-tqdm==4.28.1
+lxml==4.4.1
+arrow==0.15.4
+tqdm==4.37.0
