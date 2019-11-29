@@ -35,9 +35,13 @@ def test_error_for_malformed_tiny_link():
         api.page_id_from_tiny_link(url)
 
 
-def test_tiny_id_from_page_id():
-    for i in (3974246, '3974246'):
-        assert 'ZqQ8' == api.tiny_id(i)
+@pytest.mark.parametrize('page_id, tiny_id', [
+    (3974246, 'ZqQ8'),
+    ('3974246', 'ZqQ8'),
+    (5063420, '_EJN'),
+])
+def test_tiny_id_from_page_id(page_id, tiny_id):
+    assert tiny_id == api.tiny_id(page_id)
 
 
 def test_api_with_explicit_endpoint():
@@ -47,8 +51,15 @@ def test_api_with_explicit_endpoint():
     assert cf.url('space') == url + 'rest/api/space'
 
 
-def test_api_url_from_page_link():
+@pytest.mark.parametrize('expected, link', [
+    ('/rest/api/content/3974246', '/pages/viewpage.action?pageId=3974246'),
+    ('/rest/api/content/3974246', '/x/ZqQ8'),
+# XXX: FAILS! WHY?   ('/rest/api/content/5063416', '/x/_EJN'),
+])
+def test_api_url_from_page_link(expected, link):
+    if link.startswith('/x/'):
+        page_id = api.page_id_from_tiny_link(link)
+        assert page_id == int(expected.split('/')[-1])
     cf = api.ConfluenceAPI(endpoint='https://confluence.example.com/')
-    data = ('/x/ZqQ8', '/pages/viewpage.action?pageId=3974246')
-    for url in data:
-        assert cf.url(cf.base_url + url).endswith('/rest/api/content/3974246')
+    api_url = cf.url(cf.base_url + link)
+    assert api_url == cf.base_url + expected
