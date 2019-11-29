@@ -2,8 +2,8 @@
 # Install requirements
 #
 
-click>=3.3,<4
-colorama
+click==7.0
+colorama==0.4.1
 
 munch==2.5.0
 addict==2.2.1
@@ -19,6 +19,6 @@ pyOpenSSL>=0.15 ; python_version < '2.7.9'
 pyasn1>=0.1.9 ; python_version < '2.7.9'
 ndg-httpsclient>=0.4 ; python_version < '2.7.9'
 
-lxml==4.4.1
+lxml==4.4.2
 arrow==0.15.4
-tqdm==4.37.0
+tqdm==4.39.0

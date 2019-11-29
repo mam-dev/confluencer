@@ -93,7 +93,9 @@ def test_cmd_help():
     if result.exit_code:
         print(vars(result))
         print('~' * 78)
-        print(result.output_bytes)
+        print(result.stdout_bytes)
+        print('~' * 78)
+        print(result.stderr_bytes)
         print('~' * 78)
     words = result.output.split()
 
