@@ -19,6 +19,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import os
 import sys
+import json as jsonlib
 
 from rudiments.reamed import click
 
@@ -28,12 +29,13 @@ from ..tools import content
 
 @config.cli.command()
 @click.option('-R', '--recursive', is_flag=True, default=False, help='Handle all descendants.')
+@click.option('-J', '--json', is_flag=True, default=False, help='Print raw API response (JSON).')
 @click.option('-f', '--format', 'markup', default='view', type=click.Choice(content.CLI_CONTENT_FORMATS.keys()),
     help="Markup format.",
 )
 @click.argument('pages', metavar='‹page-url›…', nargs=-1)
 @click.pass_context
-def pretty(ctx, pages, markup, recursive=False):
+def pretty(ctx, pages, markup, recursive=False, json=False):
     """Pretty-print page content markup."""
     content_format = content.CLI_CONTENT_FORMATS[markup]
     with api.context() as cf:
@@ -44,6 +46,9 @@ def pretty(ctx, pages, markup, recursive=False):
                 # Just log and otherwise ignore any errors
                 api.diagnostics(cause)
             else:
-                root = page.etree()
-                with os.fdopen(sys.stdout.fileno(), "wb", closefd=False) as stdout:
-                    root.getroottree().write(stdout, encoding='utf8', pretty_print=True, xml_declaration=False)
+                if json:
+                    jsonlib.dump(page.json, sys.stdout, indent='  ', sort_keys=True)
+                else:
+                    root = page.etree()
+                    with os.fdopen(sys.stdout.fileno(), "wb", closefd=False) as stdout:
+                        root.getroottree().write(stdout, encoding='utf8', pretty_print=True, xml_declaration=False)
