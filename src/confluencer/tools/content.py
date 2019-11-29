@@ -194,7 +194,7 @@ class ConfluencePage(object):
         """Parse the page's body into an ElementTree."""
         attrs = {
             'id': 'page-' + self._data.id,
-            'href': self._data._links.base + self._data._links.tinyui,
+            'href': self._data._links.base + (self._data._links.tinyui or ''),
             'status': self._data.status,
             'title': self._data.title,
         }
