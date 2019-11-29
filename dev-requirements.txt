@@ -11,12 +11,12 @@ Sphinx==2.2.1
 sphinx-autobuild==0.7.1
 sphinx-rtd-theme==0.2.4
 
-pylint==2.4.3
+pylint==2.4.4
 bpython==0.18
 yolk3k==0.9
 pip-upgrader==1.4.6
 
-tox==3.14.0
+tox==3.14.1
 twine==1.15.0
 
 -r test-requirements.txt

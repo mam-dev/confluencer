@@ -2,7 +2,7 @@
 # Test requirements
 #
 
-pytest==5.2.2
+pytest==5.3.1
 pytest-reqs==0.2.1
 https://github.com/jhermann/pytest-spec/archive/fix-hook-config.zip#egg=pytest-spec
 #pytest-spec==1.1.0
