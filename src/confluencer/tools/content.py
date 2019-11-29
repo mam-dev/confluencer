@@ -181,6 +181,11 @@ class ConfluencePage(object):
         return self._data.title
 
     @property
+    def json(self):
+        """The full JSON response data."""
+        return self._data
+
+    @property
     def version(self):
         """The page's version number in history."""
         return self._data.version.number
