@@ -90,6 +90,10 @@ def diagnostics(cause):
         except AttributeError:
             data = ''
     if data:
+        try:
+            data = data.decode('ascii')
+        except (AttributeError, UnicodeDecodeError):
+            pass
         data = data.splitlines()
         if len(data) > MAX_ERROR_LINES:
             data = data[:MAX_ERROR_LINES] + ['...']
