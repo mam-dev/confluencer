@@ -38,7 +38,7 @@ def test_error_for_malformed_tiny_link():
 @pytest.mark.parametrize('page_id, tiny_id', [
     (3974246, 'ZqQ8'),
     ('3974246', 'ZqQ8'),
-    (5063420, '_EJN'),
+    (5063416, '_EJN'),
 ])
 def test_tiny_id_from_page_id(page_id, tiny_id):
     assert tiny_id == api.tiny_id(page_id)
@@ -54,7 +54,7 @@ def test_api_with_explicit_endpoint():
 @pytest.mark.parametrize('expected, link', [
     ('/rest/api/content/3974246', '/pages/viewpage.action?pageId=3974246'),
     ('/rest/api/content/3974246', '/x/ZqQ8'),
-# XXX: FAILS! WHY?   ('/rest/api/content/5063416', '/x/_EJN'),
+    ('/rest/api/content/5063416', '/x/_EJN'),
 ])
 def test_api_url_from_page_link(expected, link):
     if link.startswith('/x/'):

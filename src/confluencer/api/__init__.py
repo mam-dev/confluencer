@@ -57,8 +57,8 @@ def page_id_from_tiny_link(uri, _re=re.compile(r'/x/([-_A-Za-z0-9]+)')):
         tiny_url_id = matched.group(1)
         if isinstance(tiny_url_id, text_type):
             tiny_url_id = tiny_url_id.encode('ascii')
-        tiny_url_id += b'=' * (len(tiny_url_id) % 4)
-        page_id_bytes = (base64.urlsafe_b64decode(tiny_url_id) + b'\0\0\0\0')[:4]
+        #tiny_url_id += b'=' * (len(tiny_url_id) % 4)
+        page_id_bytes = (base64.b64decode(tiny_url_id, altchars=b'_-') + b'\0\0\0\0')[:4]
         return struct.unpack('<L', page_id_bytes)[0]
     else:
         raise ValueError("Not a tiny link: {}".format(uri))
@@ -66,7 +66,7 @@ def page_id_from_tiny_link(uri, _re=re.compile(r'/x/([-_A-Za-z0-9]+)')):
 
 def tiny_id(page_id):
     """Return *tiny link* ID for the given page ID."""
-    return base64.urlsafe_b64encode(struct.pack('<L', int(page_id)).rstrip(b'\0')).rstrip(b'=').decode('ascii')
+    return base64.b64encode(struct.pack('<L', int(page_id)).rstrip(b'\0'), altchars=b'_-').rstrip(b'=').decode('ascii')
 
 
 def diagnostics(cause):
