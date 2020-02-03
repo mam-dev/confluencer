@@ -188,7 +188,10 @@ class ConfluenceAPI(object):
                     url_path = '{}/rest/api/content/search'.format(url_path.split('/display/')[0])
                     title = unquote_plus(matched.group(2))
                     search_query = dict(
-                        cql='title="{}"'.format(title.replace('"', '?')),
+                        # CF 3.5.x ignores cqlcontext?
+                        cql='title="{}" AND space="{}"'.format(
+                            title.replace('"', '?'), matched.group(1)
+                        ),
                         cqlcontext=json.dumps(dict(spaceKey=matched.group(1))),
                     )
                     search_url = urlunparse((scheme, netloc, url_path, params, urlencode(search_query), fragment))
