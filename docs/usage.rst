@@ -78,3 +78,23 @@ diff output, to just show the applied rules repeat the option (``-nn``).
     INFO:confluencer:Replaced 3 matche(s) of "FosWiki: Section edit icons at the end of headers" (664 chars removed)
     INFO:confluencer:Replaced 1 matche(s) of "FosWiki: Replace TOC div with macro" (127 chars removed)
     INFO:confluencer:WOULD save page#2393332 "Sandbox" as v. 11
+
+
+Exporting Metadata for a Page Tree
+----------------------------------
+
+:command:`cfr stats tree` generates a JSON list of a page tree given its root page
+(other output formats will follow). You can then select more specific information
+from that using ``jq`` or other JSON tools.
+
+Consider this example creating a CSV file:
+
+.. code-block:: console
+
+    $ cfr stats tree "https://confluence.local/x/_EJN" \
+      | jq '.[] | .depth, .title, .version.when, .version.by.displayName' \
+      | paste -sd ';;;\n'
+    INFO:confluencer:Got 21 results.
+    0;"Root Page";"2016-10-24T17:20:04.000+02:00";"Jürgen Hermann"
+    1;"First Immediate Child";"2020-01-22T14:24:45.111+01:00";"Jürgen Hermann"
+    …
