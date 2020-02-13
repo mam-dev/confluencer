@@ -41,7 +41,8 @@ def pretty(ctx, pages, markup, recursive=False, json=False):
     with api.context() as cf:
         for page_url in pages:
             try:
-                page = content.ConfluencePage(cf, page_url, markup=content_format)
+                page = content.ConfluencePage(cf, page_url, markup=content_format,
+                                              expand='metadata.labels,metadata.properties')
             except api.ERRORS as cause:
                 # Just log and otherwise ignore any errors
                 api.diagnostics(cause)
