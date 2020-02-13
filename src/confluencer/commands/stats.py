@@ -18,12 +18,14 @@
 from __future__ import absolute_import, unicode_literals, print_function
 
 import sys
+import json
 from pprint import pformat
 
 from munch import Munch as Bunch
 from rudiments.reamed import click
 
 from .. import config, api
+from ..tools import content
 from .._compat import text_type, string_types
 
 
@@ -45,14 +47,17 @@ def print_result(ctx, obj):
             for key, val in text.items():
                 if isinstance(val, Bunch):
                     text[key] = dict(val)
-        text = pformat(text)
+        #text = pformat(text)
+        text = json.dumps(text, indent=2, sort_keys=True)
+    elif isinstance(text, list):
+        text = json.dumps(text, indent=2, sort_keys=True)
 
     if not isinstance(text, string_types):
         text = repr(text)
     if ctx.obj.serializer in SERIALIZERS_NEED_NL:
         text += '\n'
-    if isinstance(text, text_type):
-        text = text.encode('utf-8')
+    #if isinstance(text, text_type):
+    #    text = text.encode('utf-8')
     try:
         (ctx.obj.outfile or sys.stdout).write(text)
     except EnvironmentError as cause:
@@ -110,3 +115,33 @@ def usage(ctx, query, top=0):
             print('Got {} results.'.format(len(response.results)))
             if response.results:
                 print_result(ctx, response.results[0])
+
+
+@stats.command()
+@click.argument('rootpage')
+@click.pass_context
+def tree(ctx, rootpage):
+    """Export metadata of a page tree."""
+    if not rootpage:
+        click.serror("No root page selected via --entity!")
+        return 1
+
+    outname = getattr(ctx.obj.outfile, 'name', None)
+
+    with api.context() as cf:
+        results = []
+        try:
+            #page = content.ConfluencePage(cf, rootpage, expand='metadata.labels,metadata.properties')
+            #results.append(page.json)
+            pagetree = cf.walk(rootpage, depth_1st=True,
+                               expand='metadata.labels,metadata.properties,version')
+            for depth, data in pagetree:
+                data.update(dict(depth=depth))
+                results.append(data)
+        except api.ERRORS as cause:
+            # Just log and otherwise ignore any errors
+            api.diagnostics(cause)
+        else:
+            ctx.obj.log.info('Got {} results.'.format(len(results)))
+            if results:
+                print_result(ctx, results)
