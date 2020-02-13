@@ -157,12 +157,17 @@ class ConfluencePage(object):
         '@': 'yellow',
     }
 
-    def __init__(self, cf, url, markup='storage'):
-        """Load the given page."""
+    def __init__(self, cf, url, markup='storage', expand=None):
+        """ Load the given page.
+        """
+        if expand and isinstance(expand, str):
+            expand = expand.split(',')
+        expand = set(expand or []) | {'space', 'version', 'body.' + markup}
+
         self.cf = cf
         self.url = url
         self.markup = markup
-        self._data = cf.get(self.url, expand='space,version,body.' + self.markup)
+        self._data = cf.get(self.url, expand=','.join(expand))
         self.body = self._data.body[self.markup].value
 
     @property
