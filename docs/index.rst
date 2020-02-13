@@ -91,6 +91,7 @@ Documentation Contents
     :maxdepth: 4
 
     usage
+    cli-reference
     api-reference
     CONTRIBUTING
     LICENSE
