@@ -5,6 +5,7 @@
 #   https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
 #   https://help.github.com/en/actions/building-actions/metadata-syntax-for-github-actions
 #   https://github.com/actions/virtual-environments/blob/master/images/linux/Ubuntu1804-README.md#readme
+#   https://github.com/ymyzk/tox-gh-actions#readme
 ---
 name: CI
 
