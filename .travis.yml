@@ -7,21 +7,21 @@
 # build matrix
 language: python
 python:
-    - "3.4"
-#    - "pypy"
+  - "3.6"
+  - "3.8"
+#  - "pypy"
 #matrix:
-#    # Do not allow failures for Python 3 when you create "universal" wheels (see 'setup.cfg')
-#    allow_failures:
-#        - python: "3.4"
+#  # Do not allow failures for Python 3 when you create "universal" wheels (see 'setup.cfg')
+#  allow_failures:
+#    - python: "3.6"
 
 env:
-    - CONFLUENCE_BASE_URL=http://example.com/
-#    - CONFLUENCE_BASE_URL=https://confluence.atlassian.com/
+  - CONFLUENCE_BASE_URL=http://example.com/
+#  - CONFLUENCE_BASE_URL=https://confluence.atlassian.com/
 
 # command to install dependencies
 install:
-    - "pip install -r dev-requirements.txt"
-    - "python setup.py develop -U"
+  - "pip install -r dev-requirements.txt"
 
 sudo: false
 
@@ -34,4 +34,4 @@ script: invoke --echo --pty ci
 
 # report to coveralls.io
 after_success:
-    - coveralls --rcfile project.d/coverage.cfg
+  - coveralls --rcfile project.d/coverage.cfg
