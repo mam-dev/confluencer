@@ -37,6 +37,7 @@ jobs:
           set -xe
           python -VV
           python -m site
+          echo
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install --upgrade tox tox-gh-actions
           python -m pip install -r dev-requirements.txt
