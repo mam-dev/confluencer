@@ -1,3 +1,10 @@
+# GitHub CI Action for Python Project (with tox)
+#
+# DOCS
+#
+#   https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
+#   https://help.github.com/en/actions/building-actions/metadata-syntax-for-github-actions
+#   https://github.com/actions/virtual-environments/blob/master/images/linux/Ubuntu1804-README.md#readme
 ---
 name: CI
 
@@ -6,6 +13,10 @@ on:
     branches: ["master"]
   pull_request:
     branches: ["master"]
+
+env:
+  CONFLUENCE_BASE_URL: http://example.com/
+#  CONFLUENCE_BASE_URL: https://confluence.atlassian.com/
 
 jobs:
   tests:
@@ -28,5 +39,5 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install --upgrade tox tox-gh-actions
           python -m pip install -r dev-requirements.txt
-      - name: "Run tox targets for ${{ matrix.python-version }}"
+      - name: "Run CI task for Python ${{ matrix.python-version }}"
         run: "invoke --echo --pty ci"
